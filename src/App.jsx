@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import viteBlixt from "/vite.svg";
+import Footer from "./components/Footer";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+
 // Main App component containing all the application logic and UI
 export default function App() {
   const [area, setArea] = useState("SE4");
@@ -24,8 +26,9 @@ export default function App() {
     border: "#e5e7eb",
   };
 
-  // Helper function to fetch data from the API
-  const fetchData = async () => {
+  // Helper function to fetch data from the API.
+  // Using useCallback to memoize the function, preventing infinite re-renders.
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
     try {
@@ -43,30 +46,39 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [area]); // The function is only recreated when 'area' changes
 
-  // Function to create or update the Chart.js instance
-  const updateChart = (data, day, minPrice, maxPrice) => {
-    if (!chartRef.current) return;
+  // Function to create or update the Chart.js instance.
+  // Wrapped in useCallback to prevent re-creation on every render.
+  const updateChart = useCallback(
+    (data) => {
+      if (!chartRef.current) return;
 
-    const labels = data.map(
-      (p) => `${String(new Date(p.DateTime).getHours()).padStart(2, "0")}:00`
-    );
-    const prices = data.map((p) => p.PriceWithTax);
+      // Destroy existing chart to prevent rendering issues with new data
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+        chartInstanceRef.current = null;
+      }
 
-    const backgroundColors = prices.map((price) => {
-      if (price === minPrice) return colors.positive;
-      if (price === maxPrice) return colors.negative;
-      return colors.primary;
-    });
+      // Do not create a new chart if there is no data
+      if (data.length === 0) {
+        return;
+      }
 
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.data.labels = labels;
-      chartInstanceRef.current.data.datasets[0].data = prices;
-      chartInstanceRef.current.data.datasets[0].backgroundColor =
-        backgroundColors;
-      chartInstanceRef.current.update();
-    } else {
+      const labels = data.map(
+        (p) => `${String(new Date(p.DateTime).getHours()).padStart(2, "0")}:00`
+      );
+      const prices = data.map((p) => p.PriceWithTax);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+
+      const backgroundColors = prices.map((price) => {
+        if (price === minPrice) return colors.positive;
+        if (price === maxPrice) return colors.negative;
+        return colors.primary;
+      });
+
+      // Create a new chart instance
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: "bar",
         data: {
@@ -112,13 +124,20 @@ export default function App() {
           },
         },
       });
-    }
-  };
+    },
+    [
+      colors.positive,
+      colors.negative,
+      colors.primary,
+      colors.mutedText,
+      colors.border,
+    ]
+  ); // Dependencies for useCallback
 
   // Effect hook to fetch data whenever area changes
   useEffect(() => {
     fetchData();
-  }, [area]);
+  }, [fetchData]); // Now the dependency is the memoized fetchData function
 
   // Effect hook to update the chart whenever priceData or day changes
   useEffect(() => {
@@ -126,25 +145,11 @@ export default function App() {
     if (day === "tomorrow") {
       targetDate.setDate(targetDate.getDate() + 1);
     }
-
     const dayData = priceData.filter(
       (p) => new Date(p.DateTime).toDateString() === targetDate.toDateString()
     );
-
-    if (dayData.length === 0) {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-        chartInstanceRef.current = null;
-      }
-      return;
-    }
-
-    const prices = dayData.map((p) => p.PriceWithTax);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-
-    updateChart(dayData, day, minPrice, maxPrice);
-  }, [priceData, day]);
+    updateChart(dayData);
+  }, [priceData, day, updateChart]); // Added updateChart as a dependency
 
   // Derived state to compute stats and insights
   const getDailyStats = () => {
@@ -230,19 +235,35 @@ export default function App() {
 
   return (
     <div className="bg-background min-h-screen py-8 text-text">
+      <style>{`
+        .btn-active {
+            background-color: ${colors.card};
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            color: ${colors.primary};
+        }
+        .chart-container {
+          height: 400px;
+          width: 100%;
+          padding: 1rem;
+        }
+      `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
+          <img
+            src={viteBlixt}
+            alt="ElprisBlixt"
+            className="mx-auto mb-4 w-16 h-16"
+          />
           <h1 className="text-4xl md:text-5xl font-extrabold text-primary">
-            Elpriset-Dashboard
+            Din Elpris-Dashboard
           </h1>
           <p className="mt-2 text-lg text-mutedText">
             Välj ditt elområde för att se priser och planera din förbrukning.
           </p>
-          <img src={viteBlixt} className="h-16 mx-auto" alt="Blixt" />
         </header>
 
         <section
-          className={`bg-card rounded-xl shadow-md p-4 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border border-border`}
+          className="bg-white rounded-xl shadow-md p-4 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border border-border"
         >
           <div className="flex items-center gap-4 w-full md:w-auto">
             <label htmlFor="area-select" className="font-semibold text-primary">
@@ -297,90 +318,83 @@ export default function App() {
         )}
 
         {!isLoading && !isError && dailyStats && (
-          <>
-            <main>
-              <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
-                <StatCard
-                  title="Nuvarande Pris"
-                  value={dailyStats.currentPrice}
-                  unit="öre/kWh"
-                  color={colors.primary}
-                />
-                <StatCard
-                  title="Lägsta Pris"
-                  value={dailyStats.minPrice}
-                  unit="öre/kWh"
-                  color={colors.positive}
-                />
-                <StatCard
-                  title="Högsta Pris"
-                  value={dailyStats.maxPrice}
-                  unit="öre/kWh"
-                  color={colors.negative}
-                />
-                <StatCard
-                  title="Snittpris"
-                  value={dailyStats.avgPrice}
-                  unit="öre/kWh"
-                  color={colors.primary}
-                />
-              </section>
+          <main>
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+              <StatCard
+                title="Nuvarande Pris"
+                value={dailyStats.currentPrice}
+                unit="öre/kWh"
+                color={colors.primary}
+              />
+              <StatCard
+                title="Lägsta Pris"
+                value={dailyStats.minPrice}
+                unit="öre/kWh"
+                color={colors.positive}
+              />
+              <StatCard
+                title="Högsta Pris"
+                value={dailyStats.maxPrice}
+                unit="öre/kWh"
+                color={colors.negative}
+              />
+              <StatCard
+                title="Snittpris"
+                value={dailyStats.avgPrice}
+                unit="öre/kWh"
+                color={colors.primary}
+              />
+            </section>
 
-              <section className="bg-card p-4 md:p-6 rounded-xl shadow-md mb-8 border border-border">
-                <h2 className="text-xl font-bold text-center mb-4 text-primary">
-                  Elpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
-                  {area})
-                </h2>
-                <div className="chart-container">
-                  <canvas ref={chartRef}></canvas>
-                </div>
-              </section>
-
-              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-card p-6 rounded-xl shadow-md border border-border">
-                  <h2 className="text-xl font-bold mb-4 text-primary">
-                    Planeringshjälp
-                  </h2>
-                  <p className="text-mutedText mb-4">
-                    Baserat på priserna, här är de bästa tiderna att köra dina
-                    mest energikrävande apparater.
-                  </p>
-                  <PlanningTable
-                    tasks={tasks}
-                    data={dailyStats.dayData}
-                    findBestTime={findBestTimeForTask}
-                  />
-                </div>
-                <div className="bg-card p-6 rounded-xl shadow-md border border-border">
-                  <h2 className="text-xl font-bold mb-4 text-primary">
-                    Dagens Insikter
-                  </h2>
-                  <div className="space-y-3 text-text">
-                    {insights &&
-                      insights.map((insight, index) => (
-                        <p
-                          key={index}
-                          dangerouslySetInnerHTML={{ __html: insight }}
-                        />
-                      ))}
-                  </div>
-                </div>
-              </section>
-            </main>
-            <footer class="text-primary py-6 md:py-8 mt-16">
-              <div class="container mx-auto px-4 text-center">
-                <p class="text-sm">
-                  &copy; 2025 Danny Gomez. Alla rättigheter reserverade.
-                </p>
+            <section className="bg-card p-4 md:p-6 rounded-xl shadow-md mb-8 border border-border">
+              <h2 className="text-xl font-bold text-center mb-4 text-primary">
+                Elpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
+                {area})
+              </h2>
+              <div className="chart-container">
+                <canvas ref={chartRef}></canvas>
               </div>
-            </footer>
-          </>
+            </section>
+
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+                <h2 className="text-xl font-bold mb-4 text-primary">
+                  Planeringshjälp
+                </h2>
+                <p className="text-mutedText mb-4">
+                  Baserat på priserna, här är de bästa tiderna att köra dina
+                  mest energikrävande apparater.
+                </p>
+                <PlanningTable
+                  tasks={tasks}
+                  data={dailyStats.dayData}
+                  findBestTime={findBestTimeForTask}
+                />
+              </div>
+              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+                <h2 className="text-xl font-bold mb-4 text-primary">
+                  Dagens Insikter
+                </h2>
+                <div className="space-y-3 text-text">
+                  {insights &&
+                    insights.map((insight, index) => (
+                      <p
+                        key={index}
+                        dangerouslySetInnerHTML={{ __html: insight }}
+                      />
+                    ))}
+                </div>
+              </div>
+            </section>
+            <Footer />
+          </main>
         )}
 
         {!isLoading && !isError && !dailyStats && (
           <div className="text-center py-16">
             <p className="text-xl font-semibold text-mutedText">
-              Prisdata för imorgon är inte tillgänglig ännu.
+              Prisdata för imorgon är inte tillgänglig ännu. Den blir
+              tillgänglig efter kl. 13:00.
             </p>
           </div>
         )}
