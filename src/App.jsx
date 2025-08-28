@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
-
+import viteBlixt from "/vite.svg";
 // Main App component containing all the application logic and UI
 export default function App() {
   const [area, setArea] = useState("SE4");
@@ -233,11 +233,12 @@ export default function App() {
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-extrabold text-primary">
-            Elpriset -Dashboard
+            Elpriset-Dashboard
           </h1>
           <p className="mt-2 text-lg text-mutedText">
             Välj ditt elområde för att se priser och planera din förbrukning.
           </p>
+          <img src={viteBlixt} className="h-16 mx-auto" alt="Blixt" />
         </header>
 
         <section
@@ -296,75 +297,84 @@ export default function App() {
         )}
 
         {!isLoading && !isError && dailyStats && (
-          <main>
-            <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
-              <StatCard
-                title="Nuvarande Pris"
-                value={dailyStats.currentPrice}
-                unit="öre/kWh"
-                color={colors.primary}
-              />
-              <StatCard
-                title="Lägsta Pris"
-                value={dailyStats.minPrice}
-                unit="öre/kWh"
-                color={colors.positive}
-              />
-              <StatCard
-                title="Högsta Pris"
-                value={dailyStats.maxPrice}
-                unit="öre/kWh"
-                color={colors.negative}
-              />
-              <StatCard
-                title="Snittpris"
-                value={dailyStats.avgPrice}
-                unit="öre/kWh"
-                color={colors.primary}
-              />
-            </section>
-
-            <section className="bg-card p-4 md:p-6 rounded-xl shadow-md mb-8 border border-border">
-              <h2 className="text-xl font-bold text-center mb-4 text-primary">
-                Elpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
-                {area})
-              </h2>
-              <div className="chart-container">
-                <canvas ref={chartRef}></canvas>
-              </div>
-            </section>
-
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
-                <h2 className="text-xl font-bold mb-4 text-primary">
-                  Planeringshjälp
-                </h2>
-                <p className="text-mutedText mb-4">
-                  Baserat på priserna, här är de bästa tiderna att köra dina
-                  mest energikrävande apparater.
-                </p>
-                <PlanningTable
-                  tasks={tasks}
-                  data={dailyStats.dayData}
-                  findBestTime={findBestTimeForTask}
+          <>
+            <main>
+              <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <StatCard
+                  title="Nuvarande Pris"
+                  value={dailyStats.currentPrice}
+                  unit="öre/kWh"
+                  color={colors.primary}
                 />
-              </div>
-              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
-                <h2 className="text-xl font-bold mb-4 text-primary">
-                  Dagens Insikter
+                <StatCard
+                  title="Lägsta Pris"
+                  value={dailyStats.minPrice}
+                  unit="öre/kWh"
+                  color={colors.positive}
+                />
+                <StatCard
+                  title="Högsta Pris"
+                  value={dailyStats.maxPrice}
+                  unit="öre/kWh"
+                  color={colors.negative}
+                />
+                <StatCard
+                  title="Snittpris"
+                  value={dailyStats.avgPrice}
+                  unit="öre/kWh"
+                  color={colors.primary}
+                />
+              </section>
+
+              <section className="bg-card p-4 md:p-6 rounded-xl shadow-md mb-8 border border-border">
+                <h2 className="text-xl font-bold text-center mb-4 text-primary">
+                  Elpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
+                  {area})
                 </h2>
-                <div className="space-y-3 text-text">
-                  {insights &&
-                    insights.map((insight, index) => (
-                      <p
-                        key={index}
-                        dangerouslySetInnerHTML={{ __html: insight }}
-                      />
-                    ))}
+                <div className="chart-container">
+                  <canvas ref={chartRef}></canvas>
                 </div>
+              </section>
+
+              <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+                  <h2 className="text-xl font-bold mb-4 text-primary">
+                    Planeringshjälp
+                  </h2>
+                  <p className="text-mutedText mb-4">
+                    Baserat på priserna, här är de bästa tiderna att köra dina
+                    mest energikrävande apparater.
+                  </p>
+                  <PlanningTable
+                    tasks={tasks}
+                    data={dailyStats.dayData}
+                    findBestTime={findBestTimeForTask}
+                  />
+                </div>
+                <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+                  <h2 className="text-xl font-bold mb-4 text-primary">
+                    Dagens Insikter
+                  </h2>
+                  <div className="space-y-3 text-text">
+                    {insights &&
+                      insights.map((insight, index) => (
+                        <p
+                          key={index}
+                          dangerouslySetInnerHTML={{ __html: insight }}
+                        />
+                      ))}
+                  </div>
+                </div>
+              </section>
+            </main>
+            <footer class="text-primary py-6 md:py-8 mt-16">
+              <div class="container mx-auto px-4 text-center">
+                <p class="text-sm">
+                  &copy; 2025 Danny Gomez. Alla rättigheter reserverade.
+                </p>
               </div>
-            </section>
-          </main>
+            </footer>
+          </>
         )}
 
         {!isLoading && !isError && !dailyStats && (
