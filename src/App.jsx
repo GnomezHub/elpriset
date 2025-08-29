@@ -11,7 +11,7 @@ import Chart from "chart.js/auto";
 
 // Main App component containing all the application logic and UI
 export default function App() {
-  const [area, setArea] = useState("SE3");
+  const [area, setArea] = useState("SE4");
   const [day, setDay] = useState("today");
   const [priceData, setPriceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -250,7 +250,10 @@ export default function App() {
     : null;
 
   return (
-    <div className="bg-background min-h-screen py-8 text-text">
+    <div
+      className="min-h-screen py-8"
+      style={{ backgroundColor: colors.background, color: colors.text }}
+    >
       <style>{`
         .btn-active {
             background-color: ${colors.card};
@@ -265,11 +268,14 @@ export default function App() {
       `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
-          <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto mb-4" />
-          <h1 className="text-4xl md:text-5xl font-extrabold text-primary">
-            Elpriset dashboard
+          <img src={blixt} alt="Logo" className="mx-auto mb-4 w-16 h-16" />
+          <h1
+            className="text-4xl md:text-5xl font-extrabold"
+            style={{ color: colors.primary }}
+          >
+            Elpriset-Dashboard
           </h1>
-          <p className="mt-2 text-lg text-mutedText">
+          <p className="mt-2 text-lg" style={{ color: colors.mutedText }}>
             Välj ditt elområde för att se priser och planera din förbrukning.
           </p>
         </header>
@@ -279,7 +285,11 @@ export default function App() {
           style={{ backgroundColor: colors.card, borderColor: colors.border }}
         >
           <div className="flex items-center gap-4 w-full md:w-auto">
-            <label htmlFor="area-select" className="font-semibold text-primary">
+            <label
+              htmlFor="area-select"
+              className="font-semibold"
+              style={{ color: colors.primary }}
+            >
               Elområde:
             </label>
             <select
@@ -366,7 +376,10 @@ export default function App() {
                 borderColor: colors.border,
               }}
             >
-              <h2 className="text-xl font-bold text-center mb-4 text-primary">
+              <h2
+                className="text-xl font-bold text-center mb-4"
+                style={{ color: colors.primary }}
+              >
                 Spotpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
                 {area})
               </h2>
@@ -383,10 +396,13 @@ export default function App() {
                   borderColor: colors.border,
                 }}
               >
-                <h2 className="text-xl font-bold mb-4 text-primary">
+                <h2
+                  className="text-xl font-bold mb-4"
+                  style={{ color: colors.primary }}
+                >
                   Planeringshjälp
                 </h2>
-                <p className="text-mutedText mb-4">
+                <p className="mb-4" style={{ color: colors.mutedText }}>
                   Baserat på priserna, här är de bästa tiderna att köra dina
                   mest energikrävande apparater.
                 </p>
@@ -403,10 +419,13 @@ export default function App() {
                   borderColor: colors.border,
                 }}
               >
-                <h2 className="text-xl font-bold mb-4 text-primary">
+                <h2
+                  className="text-xl font-bold mb-4"
+                  style={{ color: colors.primary }}
+                >
                   Dagens Insikter
                 </h2>
-                <div className="space-y-3 text-text">
+                <div className="space-y-3" style={{ color: colors.text }}>
                   {insights &&
                     insights.map((insight, index) => (
                       <p
@@ -423,7 +442,10 @@ export default function App() {
 
         {!isLoading && !isError && !dailyStats && (
           <div className="text-center py-16">
-            <p className="text-xl font-semibold text-mutedText">
+            <p
+              className="text-xl font-semibold"
+              style={{ color: colors.mutedText }}
+            >
               Prisdata för imorgon är inte tillgänglig ännu. Den blir
               tillgänglig efter kl. 13:00.
             </p>
