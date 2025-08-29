@@ -17,3 +17,6 @@ Från mobilen ska det vara enkelt och tydligt, från större skärm en mer omfat
 - 🎨 **Tailwind** – Styling
 - 💡 **Web API** - Hämtning av elpriser
 - 🧰 **Supabase** För inloggning och databaser
+
+GANNT schema för återstående tid
+<img width="1768" height="319" alt="Skärmbild 2025-08-29 155851" src="https://github.com/user-attachments/assets/e5c80584-baba-4715-8dca-7bbf6051a252" />
