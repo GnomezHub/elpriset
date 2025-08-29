@@ -23,7 +23,7 @@ export default function AuthTest() {
       if (data.session) {
         console.log("Inloggad:", data.session.user);
       } else {
-        console.warn("Ingen session hittades");
+        console.warn("Ingen session hittades. " + error);
       }
     };
     getSession();
@@ -57,9 +57,9 @@ export default function AuthTest() {
       },
     });
     if (error) console.error("OAuth error:", error.message);
+    else setUser(data.user);
   };
 
-  
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow bg-white">
       <h2 className="text-xl font-bold mb-4">Supabase Auth Test</h2>
@@ -113,7 +113,6 @@ export default function AuthTest() {
             >
               Logga in med Google
             </button>
-   
           </div>
         </>
       )}

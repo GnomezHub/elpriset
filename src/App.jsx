@@ -1,11 +1,17 @@
-import Chart from "chart.js/auto";
-import viteBlixt from "/vite.svg";
+import blixt from "/vite.svg";
 import Footer from "./components/Footer";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
+import Chart from "chart.js/auto";
 
 // Main App component containing all the application logic and UI
 export default function App() {
-  const [area, setArea] = useState("SE4");
+  const [area, setArea] = useState("SE3");
   const [day, setDay] = useState("today");
   const [priceData, setPriceData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,79 +19,96 @@ export default function App() {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  // Define color palette from the Calm Neutral theme
-  const colors = {
-    primary: "#2c3e50",
-    secondary: "#F28C28",
-    background: "#F8F7F4",
-    card: "#ffffff",
-    text: "#2c3e50",
-    mutedText: "#6b7280",
-    positive: "#16a34a",
-    negative: "#dc2626",
-    border: "#e5e7eb",
-  };
+  // Define color palette from the Calm Neutral theme using useMemo to ensure it's stable
+  const colors = useMemo(
+    () => ({
+      primary: "#2c3e50",
+      secondary: "#F28C28",
+      background: "#F8F7F4",
+      card: "#ffffff",
+      text: "#2c3e50",
+      mutedText: "#6b7280",
+      positive: "#16a34a",
+      negative: "#dc2626",
+      border: "#e5e7eb",
+    }),
+    []
+  );
 
-  // Helper function to fetch data from the API.
-  // Using useCallback to memoize the function, preventing infinite re-renders.
+  // Helper function to fetch electricity price data from the new API
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
+
+    const targetDate = new Date();
+    if (day === "tomorrow") {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+
+    // Format the date for the API URL: YYYY/MM-DD
+    const year = targetDate.getFullYear();
+    const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+    const dayOfMonth = String(targetDate.getDate()).padStart(2, "0");
+    const dateUrl = `${year}/${month}-${dayOfMonth}`;
+
     try {
       const response = await fetch(
-        `https://api.spot-hinta.fi/TodayAndDayForward?areas=${area}`
+        `https://www.elprisetjustnu.se/api/v1/prices/${dateUrl}_${area}.json`
       );
       if (!response.ok) {
-        throw new Error("Kunde inte hämta data från Spot-hinta.fi");
+        throw new Error("Kunde inte hämta elprisdata.");
       }
       const data = await response.json();
       setPriceData(data);
     } catch (error) {
       console.error("Fel vid hämtning av elprisdata:", error);
       setIsError(true);
+      setPriceData([]);
     } finally {
       setIsLoading(false);
     }
-  }, [area]); // The function is only recreated when 'area' changes
+  }, [area, day]);
+
+  // Function to convert SEK/kWh to öre/kWh
+  const convertToSekOre = useCallback((priceInSekKWh) => {
+    return priceInSekKWh * 100;
+  }, []);
 
   // Function to create or update the Chart.js instance.
-  // Wrapped in useCallback to prevent re-creation on every render.
   const updateChart = useCallback(
     (data) => {
       if (!chartRef.current) return;
 
-      // Destroy existing chart to prevent rendering issues with new data
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
         chartInstanceRef.current = null;
       }
 
-      // Do not create a new chart if there is no data
       if (data.length === 0) {
         return;
       }
 
       const labels = data.map(
-        (p) => `${String(new Date(p.DateTime).getHours()).padStart(2, "0")}:00`
+        (p) =>
+          `${String(new Date(p.time_start).getHours()).padStart(2, "0")}:00`
       );
-      const prices = data.map((p) => p.PriceWithTax);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const prices = data.map((p) => convertToSekOre(p.SEK_per_kWh));
 
       const backgroundColors = prices.map((price) => {
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
         if (price === minPrice) return colors.positive;
         if (price === maxPrice) return colors.negative;
         return colors.primary;
       });
 
-      // Create a new chart instance
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: "bar",
         data: {
           labels: labels,
           datasets: [
             {
-              label: "Pris (öre/kWh)",
+              label: "Spotpris (öre/kWh)",
               data: prices,
               backgroundColor: backgroundColors,
               borderColor: "transparent",
@@ -102,7 +125,8 @@ export default function App() {
             tooltip: {
               callbacks: {
                 title: (tooltipItems) => `Kl. ${tooltipItems[0].label}`,
-                label: (context) => `${context.parsed.y.toFixed(2)} öre/kWh`,
+                label: (context) =>
+                  `Spotpris: ${context.parsed.y.toFixed(2)} öre/kWh`,
               },
             },
           },
@@ -125,55 +149,40 @@ export default function App() {
         },
       });
     },
-    [
-      colors.positive,
-      colors.negative,
-      colors.primary,
-      colors.mutedText,
-      colors.border,
-    ]
-  ); // Dependencies for useCallback
+    [colors, convertToSekOre]
+  );
 
-  // Effect hook to fetch data whenever area changes
+  // Effect hook to fetch price data whenever area or day changes
   useEffect(() => {
     fetchData();
-  }, [fetchData]); // Now the dependency is the memoized fetchData function
+  }, [fetchData]);
 
-  // Effect hook to update the chart whenever priceData or day changes
+  // Effect hook to update the chart whenever priceData changes
   useEffect(() => {
-    const targetDate = new Date();
-    if (day === "tomorrow") {
-      targetDate.setDate(targetDate.getDate() + 1);
-    }
-    const dayData = priceData.filter(
-      (p) => new Date(p.DateTime).toDateString() === targetDate.toDateString()
-    );
-    updateChart(dayData);
-  }, [priceData, day, updateChart]); // Added updateChart as a dependency
+    updateChart(priceData);
+  }, [priceData, updateChart]);
 
   // Derived state to compute stats and insights
-  const getDailyStats = () => {
-    const targetDate = new Date();
-    if (day === "tomorrow") {
-      targetDate.setDate(targetDate.getDate() + 1);
-    }
-    const dayData = priceData.filter(
-      (p) => new Date(p.DateTime).toDateString() === targetDate.toDateString()
-    );
-    if (dayData.length === 0) {
+  const getDailyStats = useCallback(() => {
+    if (priceData.length === 0) {
       return null;
     }
-    const prices = dayData.map((p) => p.PriceWithTax);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-    const avgPrice = prices.reduce((sum, p) => sum + p, 0) / prices.length;
+    const rawPrices = priceData.map((p) => convertToSekOre(p.SEK_per_kWh));
+
+    const minPrice = Math.min(...rawPrices);
+    const maxPrice = Math.max(...rawPrices);
+    const avgPrice =
+      rawPrices.reduce((sum, p) => sum + p, 0) / rawPrices.length;
+
     const currentHour = new Date().getHours();
     const currentPriceData =
       day === "today"
-        ? dayData.find((p) => new Date(p.DateTime).getHours() === currentHour)
+        ? priceData.find(
+            (p) => new Date(p.time_start).getHours() === currentHour
+          )
         : null;
     const currentPrice = currentPriceData
-      ? currentPriceData.PriceWithTax
+      ? convertToSekOre(currentPriceData.SEK_per_kWh)
       : null;
 
     return {
@@ -181,46 +190,53 @@ export default function App() {
       maxPrice: maxPrice.toFixed(2),
       avgPrice: avgPrice.toFixed(2),
       currentPrice: currentPrice ? currentPrice.toFixed(2) : "-",
-      dayData,
+      dayData: priceData,
     };
-  };
+  }, [priceData, day, convertToSekOre]);
 
-  const getInsights = (dayData, avgPrice, minPrice) => {
-    const cheapestHours = dayData
-      .filter((p) => p.PriceWithTax <= minPrice * 1.1)
-      .map((p) => new Date(p.DateTime).getHours());
-    if (cheapestHours.length === 0) {
-      return ["Inga specifika lågpristimmar kunde identifieras."];
-    }
-    const sortedHours = [...new Set(cheapestHours)].sort((a, b) => a - b);
-    const cheapestPeriod = `${String(sortedHours[0]).padStart(
-      2,
-      "0"
-    )}:00 - ${String(sortedHours[sortedHours.length - 1] + 1).padStart(
-      2,
-      "0"
-    )}:00`;
-    return [
-      `✅ Snittpriset för dagen är <strong class="font-bold">${avgPrice} öre/kWh</strong>.`,
-      `💡 De absolut billigaste timmarna har ett pris runt <strong class="font-bold text-green-700">${minPrice} öre/kWh</strong>.`,
-      `🕒 Det är mest fördelaktigt att förbruka el under perioden <strong class="font-bold">${cheapestPeriod}</strong>.`,
-    ];
-  };
-
-  const findBestTimeForTask = (data, duration) => {
-    let minAvgPrice = Infinity;
-    let bestStartHour = -1;
-    for (let i = 0; i <= data.length - duration; i++) {
-      const chunk = data.slice(i, i + duration);
-      const avgPrice =
-        chunk.reduce((sum, p) => sum + p.PriceWithTax, 0) / duration;
-      if (avgPrice < minAvgPrice) {
-        minAvgPrice = avgPrice;
-        bestStartHour = new Date(chunk[0].DateTime).getHours();
+  const getInsights = useCallback(
+    (dayData, avgPrice, minPrice) => {
+      const cheapestHours = dayData
+        .filter((p) => convertToSekOre(p.SEK_per_kWh) <= minPrice * 1.1)
+        .map((p) => new Date(p.time_start).getHours());
+      if (cheapestHours.length === 0) {
+        return ["Inga specifika lågpristimmar kunde identifieras."];
       }
-    }
-    return { hour: bestStartHour, price: minAvgPrice };
-  };
+      const sortedHours = [...new Set(cheapestHours)].sort((a, b) => a - b);
+      const cheapestPeriod = `${String(sortedHours[0]).padStart(
+        2,
+        "0"
+      )}:00 - ${String(sortedHours[sortedHours.length - 1] + 1).padStart(
+        2,
+        "0"
+      )}:00`;
+      return [
+        `✅ Spotpriset för dagen är cirka <strong class="font-bold">${avgPrice} öre/kWh</strong>.`,
+        `💡 De absolut billigaste timmarna har ett spotpris runt <strong class="font-bold text-green-700">${minPrice} öre/kWh</strong>.`,
+        `🕒 Det är mest fördelaktigt att förbruka el under perioden <strong class="font-bold">${cheapestPeriod}</strong>.`,
+      ];
+    },
+    [convertToSekOre]
+  );
+
+  const findBestTimeForTask = useCallback(
+    (data, duration) => {
+      let minAvgPrice = Infinity;
+      let bestStartHour = -1;
+      for (let i = 0; i <= data.length - duration; i++) {
+        const chunk = data.slice(i, i + duration);
+        const avgPrice =
+          chunk.reduce((sum, p) => sum + convertToSekOre(p.SEK_per_kWh), 0) /
+          duration;
+        if (avgPrice < minAvgPrice) {
+          minAvgPrice = avgPrice;
+          bestStartHour = new Date(chunk[0].time_start).getHours();
+        }
+      }
+      return { hour: bestStartHour, price: minAvgPrice };
+    },
+    [convertToSekOre]
+  );
 
   const tasks = [
     { name: "Tvättmaskin", duration: 2, icon: "🧺" },
@@ -238,7 +254,7 @@ export default function App() {
       <style>{`
         .btn-active {
             background-color: ${colors.card};
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.1), 1px 1px 2px 0 rgba(0, 0, 0, 0.06);
             color: ${colors.primary};
         }
         .chart-container {
@@ -249,13 +265,9 @@ export default function App() {
       `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
-          <img
-            src={viteBlixt}
-            alt="ElprisBlixt"
-            className="mx-auto mb-4 w-16 h-16"
-          />
+          <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto mb-4" />
           <h1 className="text-4xl md:text-5xl font-extrabold text-primary">
-            Din Elpris-Dashboard
+            Elpriset dashboard
           </h1>
           <p className="mt-2 text-lg text-mutedText">
             Välj ditt elområde för att se priser och planera din förbrukning.
@@ -263,7 +275,8 @@ export default function App() {
         </header>
 
         <section
-          className="bg-white rounded-xl shadow-md p-4 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border border-border"
+          className="rounded-xl shadow-md p-4 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border"
+          style={{ backgroundColor: colors.card, borderColor: colors.border }}
         >
           <div className="flex items-center gap-4 w-full md:w-auto">
             <label htmlFor="area-select" className="font-semibold text-primary">
@@ -321,34 +334,40 @@ export default function App() {
           <main>
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
               <StatCard
-                title="Nuvarande Pris"
+                title="Spotpris just nu"
                 value={dailyStats.currentPrice}
                 unit="öre/kWh"
                 color={colors.primary}
               />
               <StatCard
-                title="Lägsta Pris"
+                title="Lägsta spotpris"
                 value={dailyStats.minPrice}
                 unit="öre/kWh"
                 color={colors.positive}
               />
               <StatCard
-                title="Högsta Pris"
+                title="Högsta spotpris"
                 value={dailyStats.maxPrice}
                 unit="öre/kWh"
                 color={colors.negative}
               />
               <StatCard
-                title="Snittpris"
+                title="Snittspotpris"
                 value={dailyStats.avgPrice}
                 unit="öre/kWh"
                 color={colors.primary}
               />
             </section>
 
-            <section className="bg-card p-4 md:p-6 rounded-xl shadow-md mb-8 border border-border">
+            <section
+              className="p-4 md:p-6 rounded-xl shadow-md mb-8 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.border,
+              }}
+            >
               <h2 className="text-xl font-bold text-center mb-4 text-primary">
-                Elpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
+                Spotpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
                 {area})
               </h2>
               <div className="chart-container">
@@ -357,7 +376,13 @@ export default function App() {
             </section>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+              <div
+                className="p-6 rounded-xl shadow-md border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                }}
+              >
                 <h2 className="text-xl font-bold mb-4 text-primary">
                   Planeringshjälp
                 </h2>
@@ -371,7 +396,13 @@ export default function App() {
                   findBestTime={findBestTimeForTask}
                 />
               </div>
-              <div className="bg-card p-6 rounded-xl shadow-md border border-border">
+              <div
+                className="p-6 rounded-xl shadow-md border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                }}
+              >
                 <h2 className="text-xl font-bold mb-4 text-primary">
                   Dagens Insikter
                 </h2>
@@ -433,7 +464,9 @@ const PlanningTable = ({ tasks, data, findBestTime }) => (
                 {task.icon} {task.name}
               </td>
               <td className="py-3 text-right font-bold text-green-700">
-                {String(bestTime.hour).padStart(2, "0")}:00
+                {bestTime.hour === -1
+                  ? "N/A"
+                  : `${String(bestTime.hour).padStart(2, "0")}:00`}
               </td>
             </tr>
           );
