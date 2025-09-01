@@ -1,13 +1,17 @@
 import AuthTest from "./AuthTest";
-export default function Footer() {
+export default function Footer({colors}) {
   return (
-    <footer class="text-primary py-6 md:py-8 mt-16">
-        <AuthTest />
-      <div class="container mx-auto px-4 text-center">
-        <p class="text-sm">
+    <div>
+      {" "}
+      <AuthTest />
+      <footer
+        className="text-center py-8 mt-8 border-t"
+        style={{ borderColor: colors.border }}
+      >
+        <p className="text-sm mt-2" style={{ color: colors.primary }}>
           &copy; 2025 Danny Gomez. Alla rättigheter reserverade.
         </p>
-      </div>
-    </footer>
+      </footer>
+    </div>
   );
 }

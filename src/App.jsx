@@ -70,7 +70,7 @@ const themes = {
     positive: "#16a34a",
     negative: "#dc2626",
     border: "#e9d5ff",
-  }
+  },
 };
 
 // Theme Selector Component
@@ -82,40 +82,47 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:opacity-80"
-        style={{ 
+        style={{
           backgroundColor: themes[currentTheme].card,
           color: themes[currentTheme].text,
-          border: `1px solid ${themes[currentTheme].border}`
+          border: `1px solid ${themes[currentTheme].border}`,
         }}
       >
-        <div 
+        <div
           className="w-4 h-4 rounded-full"
           style={{ backgroundColor: themes[currentTheme].primary }}
         />
         <span className="text-sm font-medium hidden sm:inline">
           {themes[currentTheme].name}
         </span>
-        <svg 
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className={`w-4 h-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
       {isOpen && (
         <>
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div 
+          <div
             className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-20"
-            style={{ 
+            style={{
               backgroundColor: themes[currentTheme].card,
-              borderColor: themes[currentTheme].border
+              borderColor: themes[currentTheme].border,
             }}
           >
             {Object.entries(themes).map(([key, theme]) => (
@@ -126,22 +133,26 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
                   setIsOpen(false);
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:opacity-80 transition-all first:rounded-t-lg last:rounded-b-lg ${
-                  currentTheme === key ? 'opacity-100' : 'opacity-70'
+                  currentTheme === key ? "opacity-100" : "opacity-70"
                 }`}
                 style={{ color: themes[currentTheme].text }}
               >
-                <div 
+                <div
                   className="w-4 h-4 rounded-full"
                   style={{ backgroundColor: theme.primary }}
                 />
                 <span className="text-sm font-medium">{theme.name}</span>
                 {currentTheme === key && (
-                  <svg 
-                    className="w-4 h-4 ml-auto" 
-                    fill="currentColor" 
+                  <svg
+                    className="w-4 h-4 ml-auto"
+                    fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 )}
               </button>
@@ -167,7 +178,17 @@ export default function App() {
   // Get current theme colors
   const colors = useMemo(() => themes[currentTheme], [currentTheme]);
 
-  // Helper function to fetch electricity price data from the new API
+  // Define tasks with useMemo to avoid recreating it on every render
+  const tasks = useMemo(
+    () => [
+      { name: "Tvättmaskin", duration: 2, icon: "🧺" },
+      { name: "Diskmaskin", duration: 2, icon: "🍽️" },
+      { name: "Ladda elbil (långsamt)", duration: 4, icon: "🚗" },
+    ],
+    []
+  );
+
+  // Helper function to fetch electricity price data from the API
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
@@ -177,7 +198,6 @@ export default function App() {
       targetDate.setDate(targetDate.getDate() + 1);
     }
 
-    // Format the date for the API URL: YYYY/MM-DD
     const year = targetDate.getFullYear();
     const month = String(targetDate.getMonth() + 1).padStart(2, "0");
     const dayOfMonth = String(targetDate.getDate()).padStart(2, "0");
@@ -206,6 +226,49 @@ export default function App() {
     return priceInSekKWh * 100;
   }, []);
 
+  // Function to find the best (cheapest) time period for a given task duration
+  const findBestTimeForTask = useCallback(
+    (data, duration) => {
+      let minAvgPrice = Infinity;
+      let bestStartHour = -1;
+      for (let i = 0; i <= data.length - duration; i++) {
+        const chunk = data.slice(i, i + duration);
+        const avgPrice =
+          chunk.reduce((sum, p) => sum + convertToSekOre(p.SEK_per_kWh), 0) /
+          duration;
+        if (avgPrice < minAvgPrice) {
+          minAvgPrice = avgPrice;
+          bestStartHour = new Date(chunk[0].time_start).getHours();
+        }
+      }
+      return { hour: bestStartHour, price: minAvgPrice };
+    },
+    [convertToSekOre]
+  );
+
+  // Function to find the worst (most expensive) time period for a given task duration
+  const findWorstTimeForTask = useCallback(
+    (data, duration) => {
+      if (!data || data.length < duration) {
+        return { hour: -1, price: -Infinity };
+      }
+      let maxAvgPrice = -Infinity;
+      let worstStartHour = -1;
+      for (let i = 0; i <= data.length - duration; i++) {
+        const chunk = data.slice(i, i + duration);
+        const avgPrice =
+          chunk.reduce((sum, p) => sum + convertToSekOre(p.SEK_per_kWh), 0) /
+          duration;
+        if (avgPrice > maxAvgPrice) {
+          maxAvgPrice = avgPrice;
+          worstStartHour = new Date(chunk[0].time_start).getHours();
+        }
+      }
+      return { hour: worstStartHour, price: maxAvgPrice };
+    },
+    [convertToSekOre]
+  );
+
   // Function to create or update the Chart.js instance.
   const updateChart = useCallback(
     (data) => {
@@ -226,11 +289,42 @@ export default function App() {
       );
       const prices = data.map((p) => convertToSekOre(p.SEK_per_kWh));
 
-      const backgroundColors = prices.map((price) => {
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
-        if (price === minPrice) return colors.positive;
-        if (price === maxPrice) return colors.negative;
+      // --- NEW: Logic to color chart bars based on the longest task ---
+      const longestTaskDuration = Math.max(
+        ...tasks.map((task) => task.duration),
+        0
+      );
+
+      let bestPeriod = { hour: -1 };
+      let worstPeriod = { hour: -1 };
+
+      if (longestTaskDuration > 0 && data.length >= longestTaskDuration) {
+        bestPeriod = findBestTimeForTask(data, longestTaskDuration);
+        worstPeriod = findWorstTimeForTask(data, longestTaskDuration);
+      }
+
+      const backgroundColors = data.map((p) => {
+        const hour = new Date(p.time_start).getHours();
+
+        // Color green if the hour is within the best period for the longest task
+        if (
+          bestPeriod.hour !== -1 &&
+          hour >= bestPeriod.hour &&
+          hour < bestPeriod.hour + longestTaskDuration
+        ) {
+          return colors.positive;
+        }
+
+        // Color red if the hour is within the worst period for the longest task
+        if (
+          worstPeriod.hour !== -1 &&
+          hour >= worstPeriod.hour &&
+          hour < worstPeriod.hour + longestTaskDuration
+        ) {
+          return colors.negative;
+        }
+
+        // Default color for all other bars
         return colors.primary;
       });
 
@@ -286,7 +380,7 @@ export default function App() {
         },
       });
     },
-    [colors, convertToSekOre]
+    [colors, convertToSekOre, tasks, findBestTimeForTask, findWorstTimeForTask]
   );
 
   // Effect hook to fetch price data whenever area or day changes
@@ -294,7 +388,7 @@ export default function App() {
     fetchData();
   }, [fetchData]);
 
-  // Effect hook to update the chart whenever priceData changes
+  // Effect hook to update the chart whenever priceData or the chart logic changes
   useEffect(() => {
     updateChart(priceData);
   }, [priceData, updateChart]);
@@ -356,31 +450,6 @@ export default function App() {
     [convertToSekOre, colors.positive]
   );
 
-  const findBestTimeForTask = useCallback(
-    (data, duration) => {
-      let minAvgPrice = Infinity;
-      let bestStartHour = -1;
-      for (let i = 0; i <= data.length - duration; i++) {
-        const chunk = data.slice(i, i + duration);
-        const avgPrice =
-          chunk.reduce((sum, p) => sum + convertToSekOre(p.SEK_per_kWh), 0) /
-          duration;
-        if (avgPrice < minAvgPrice) {
-          minAvgPrice = avgPrice;
-          bestStartHour = new Date(chunk[0].time_start).getHours();
-        }
-      }
-      return { hour: bestStartHour, price: minAvgPrice };
-    },
-    [convertToSekOre]
-  );
-
-  const tasks = [
-    { name: "Tvättmaskin", duration: 2, icon: "🧺" },
-    { name: "Diskmaskin", duration: 2, icon: "🍽️" },
-    { name: "Ladda elbil (långsamt)", duration: 4, icon: "🚗" },
-  ];
-
   const dailyStats = getDailyStats();
   const insights = dailyStats
     ? getInsights(dailyStats.dayData, dailyStats.avgPrice, dailyStats.minPrice)
@@ -413,10 +482,8 @@ export default function App() {
       `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
-         
-            <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto" />
-  
-         
+          <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto" />
+
           <h1
             className="text-4xl md:text-5xl font-extrabold"
             style={{ color: colors.primary }}
@@ -452,13 +519,13 @@ export default function App() {
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
           </div>
-                    <div className="flex-1 flex justify-end">
-              <ThemeSelector 
-                currentTheme={currentTheme} 
-                onThemeChange={setCurrentTheme} 
-              />
-            </div>
-          <div 
+          <div className="flex-1 flex justify-end">
+            <ThemeSelector
+              currentTheme={currentTheme}
+              onThemeChange={setCurrentTheme}
+            />
+          </div>
+          <div
             className="flex items-center gap-2 rounded-lg p-1 w-full md:w-auto justify-center"
             style={{ backgroundColor: colors.background }}
           >
@@ -485,7 +552,10 @@ export default function App() {
 
         {isLoading && (
           <div className="text-center py-16">
-            <p className="text-xl font-semibold" style={{ color: colors.mutedText }}>
+            <p
+              className="text-xl font-semibold"
+              style={{ color: colors.mutedText }}
+            >
               Hämtar elpriser...
             </p>
           </div>
@@ -493,7 +563,10 @@ export default function App() {
 
         {isError && !isLoading && (
           <div className="text-center py-16">
-            <p className="text-xl font-semibold" style={{ color: colors.negative }}>
+            <p
+              className="text-xl font-semibold"
+              style={{ color: colors.negative }}
+            >
               Kunde inte hämta elprisdata. Försök igen senare.
             </p>
           </div>
@@ -612,7 +685,7 @@ export default function App() {
                 </div>
               </div>
             </section>
-            <Footer />
+            <Footer colors={colors} />
           </main>
         )}
 
@@ -633,16 +706,28 @@ export default function App() {
 }
 
 // React component for the KPI cards
-const StatCard = ({ title, value, unit, color, backgroundColor, borderColor, textColor, mutedTextColor }) => (
-  <div 
+const StatCard = ({
+  title,
+  value,
+  unit,
+  color,
+  backgroundColor,
+  borderColor,
+  mutedTextColor,
+}) => (
+  <div
     className="p-4 rounded-xl shadow-sm text-center border transition-all duration-300"
     style={{ backgroundColor, borderColor }}
   >
-    <h3 className="text-sm font-semibold" style={{ color: mutedTextColor }}>{title}</h3>
+    <h3 className="text-sm font-semibold" style={{ color: mutedTextColor }}>
+      {title}
+    </h3>
     <p className="text-2xl md:text-3xl font-bold" style={{ color: color }}>
       {value}
     </p>
-    <p className="text-xs" style={{ color: mutedTextColor }}>{unit}</p>
+    <p className="text-xs" style={{ color: mutedTextColor }}>
+      {unit}
+    </p>
   </div>
 );
 
@@ -652,19 +737,30 @@ const PlanningTable = ({ tasks, data, findBestTime, colors }) => (
     <table className="w-full text-left">
       <thead>
         <tr className="border-b" style={{ borderColor: colors.border }}>
-          <th className="py-2" style={{ color: colors.text }}>Aktivitet</th>
-          <th className="py-2 text-right" style={{ color: colors.text }}>Bästa starttid</th>
+          <th className="py-2" style={{ color: colors.text }}>
+            Aktivitet
+          </th>
+          <th className="py-2 text-right" style={{ color: colors.text }}>
+            Bästa starttid
+          </th>
         </tr>
       </thead>
       <tbody>
         {tasks.map((task, index) => {
           const bestTime = findBestTime(data, task.duration);
           return (
-            <tr key={index} className="border-b" style={{ borderColor: colors.border }}>
+            <tr
+              key={index}
+              className="border-b"
+              style={{ borderColor: colors.border }}
+            >
               <td className="py-3 font-semibold" style={{ color: colors.text }}>
                 {task.icon} {task.name}
               </td>
-              <td className="py-3 text-right font-bold" style={{ color: colors.positive }}>
+              <td
+                className="py-3 text-right font-bold"
+                style={{ color: colors.positive }}
+              >
                 {bestTime.hour === -1
                   ? "N/A"
                   : `${String(bestTime.hour).padStart(2, "0")}:00`}
