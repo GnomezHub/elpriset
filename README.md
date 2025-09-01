@@ -20,3 +20,7 @@ Från mobilen ska det vara enkelt och tydligt, från större skärm en mer omfat
 
 GANNT schema för återstående tid
 <img width="1768" height="319" alt="Skärmbild 2025-08-29 155851" src="https://github.com/user-attachments/assets/e5c80584-baba-4715-8dca-7bbf6051a252" />
+
+## AI
+
+Att använda ai i utvecklingssammanhang är som att sammarbeta med en programmerare eller en designer som har hög talang men kan ibland ändå göra misstag eller missförstå uppdraget. Du är uppdragsgivaren och det gäller att formulera uppraget så bra som möjligt från början. Som fullstackutvecklare får man göra en bedömning samtidigt om inte det är snabbare att göra uppgiften själv. Jag har funnit att det oftast är allra bäst att sammarbeta med AI om det går att snabbt bedömma att det är korrekt utfört. Förstår man inte vad det har gjort är det inte så lätt korrigera i efterhand.
