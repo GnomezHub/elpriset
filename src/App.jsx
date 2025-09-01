@@ -1,5 +1,5 @@
-import blixt from "/vite.svg";
-import Footer from "./components/Footer";
+// import blixt from "/vite.svg";
+// import Footer from "./components/Footer";
 import React, {
   useState,
   useEffect,
@@ -90,7 +90,12 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
       >
         <div
           className="w-4 h-4 rounded-full"
-          style={{ backgroundColor: themes[currentTheme].primary }}
+          style={{
+            backgroundColor:
+              themes[currentTheme].name === "Dark Mode"
+                ? themes[currentTheme].background
+                : themes[currentTheme].primary,
+          }}
         />
         <span className="text-sm font-medium hidden sm:inline">
           {themes[currentTheme].name}
@@ -139,7 +144,12 @@ const ThemeSelector = ({ currentTheme, onThemeChange }) => {
               >
                 <div
                   className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: theme.primary }}
+                  style={{
+                    backgroundColor:
+                      theme.name === "Dark Mode"
+                        ? theme.background
+                        : theme.primary,
+                  }}
                 />
                 <span className="text-sm font-medium">{theme.name}</span>
                 {currentTheme === key && (
@@ -174,6 +184,7 @@ export default function App() {
   const [isError, setIsError] = useState(false);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  const [showTomorrowInfo, setShowTomorrowInfo] = useState(false);
 
   // Get current theme colors
   const colors = useMemo(() => themes[currentTheme], [currentTheme]);
@@ -181,9 +192,10 @@ export default function App() {
   // Define tasks with useMemo to avoid recreating it on every render
   const tasks = useMemo(
     () => [
-      { name: "Tvättmaskin", duration: 2, icon: "🧺" },
+      { name: "Tvättmaskin", duration: 3, icon: "🧺" },
+      { name: "Dammsugare", duration: 1, icon: "🧹" },
       { name: "Diskmaskin", duration: 2, icon: "🍽️" },
-      { name: "Ladda elbil (långsamt)", duration: 4, icon: "🚗" },
+      { name: "Ladda elbil", duration: 4, icon: "🚗" },
     ],
     []
   );
@@ -192,6 +204,7 @@ export default function App() {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     setIsError(false);
+    setShowTomorrowInfo(false);
 
     const targetDate = new Date();
     if (day === "tomorrow") {
@@ -208,10 +221,18 @@ export default function App() {
         `https://www.elprisetjustnu.se/api/v1/prices/${dateUrl}_${area}.json`
       );
       if (!response.ok) {
-        throw new Error("Kunde inte hämta elprisdata.");
+        // Check if the current time is before 13:00 and the user selected "tomorrow"
+        const now = new Date();
+        if (day === "tomorrow" && now.getHours() < 13) {
+          setShowTomorrowInfo(true);
+          setPriceData([]);
+        } else {
+          throw new Error("Kunde inte hämta elprisdata.");
+        }
+      } else {
+        const data = await response.json();
+        setPriceData(data);
       }
-      const data = await response.json();
-      setPriceData(data);
     } catch (error) {
       console.error("Fel vid hämtning av elprisdata:", error);
       setIsError(true);
@@ -283,11 +304,19 @@ export default function App() {
         return;
       }
 
-      const labels = data.map(
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      const filteredData =
+        day === "today"
+          ? data.filter((p) => new Date(p.time_start).getHours() >= currentHour)
+          : data;
+
+      const labels = filteredData.map(
         (p) =>
           `${String(new Date(p.time_start).getHours()).padStart(2, "0")}:00`
       );
-      const prices = data.map((p) => convertToSekOre(p.SEK_per_kWh));
+      const prices = filteredData.map((p) => convertToSekOre(p.SEK_per_kWh));
 
       // --- NEW: Logic to color chart bars based on the longest task ---
       const longestTaskDuration = Math.max(
@@ -298,12 +327,15 @@ export default function App() {
       let bestPeriod = { hour: -1 };
       let worstPeriod = { hour: -1 };
 
-      if (longestTaskDuration > 0 && data.length >= longestTaskDuration) {
-        bestPeriod = findBestTimeForTask(data, longestTaskDuration);
-        worstPeriod = findWorstTimeForTask(data, longestTaskDuration);
+      if (
+        longestTaskDuration > 0 &&
+        filteredData.length >= longestTaskDuration
+      ) {
+        bestPeriod = findBestTimeForTask(filteredData, longestTaskDuration);
+        worstPeriod = findWorstTimeForTask(filteredData, longestTaskDuration);
       }
 
-      const backgroundColors = data.map((p) => {
+      const backgroundColors = filteredData.map((p) => {
         const hour = new Date(p.time_start).getHours();
 
         // Color green if the hour is within the best period for the longest task
@@ -380,7 +412,14 @@ export default function App() {
         },
       });
     },
-    [colors, convertToSekOre, tasks, findBestTimeForTask, findWorstTimeForTask]
+    [
+      colors,
+      convertToSekOre,
+      tasks,
+      day,
+      findBestTimeForTask,
+      findWorstTimeForTask,
+    ]
   );
 
   // Effect hook to fetch price data whenever area or day changes
@@ -398,14 +437,27 @@ export default function App() {
     if (priceData.length === 0) {
       return null;
     }
-    const rawPrices = priceData.map((p) => convertToSekOre(p.SEK_per_kWh));
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    const filteredData =
+      day === "today"
+        ? priceData.filter(
+            (p) => new Date(p.time_start).getHours() >= currentHour
+          )
+        : priceData;
+
+    if (filteredData.length === 0) {
+      return null;
+    }
+
+    const rawPrices = filteredData.map((p) => convertToSekOre(p.SEK_per_kWh));
 
     const minPrice = Math.min(...rawPrices);
     const maxPrice = Math.max(...rawPrices);
     const avgPrice =
       rawPrices.reduce((sum, p) => sum + p, 0) / rawPrices.length;
 
-    const currentHour = new Date().getHours();
     const currentPriceData =
       day === "today"
         ? priceData.find(
@@ -421,7 +473,7 @@ export default function App() {
       maxPrice: maxPrice.toFixed(2),
       avgPrice: avgPrice.toFixed(2),
       currentPrice: currentPrice ? currentPrice.toFixed(2) : "-",
-      dayData: priceData,
+      dayData: filteredData,
     };
   }, [priceData, day, convertToSekOre]);
 
@@ -482,21 +534,36 @@ export default function App() {
       `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         <header className="text-center mb-8">
-          <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto" />
-
-          <h1
-            className="text-4xl md:text-5xl font-extrabold"
-            style={{ color: colors.primary }}
-          >
-            Elpriset-Dashboard
-          </h1>
+          {/* <img src={blixt} alt="Logo" className="w-16 h-16 mx-auto" /> */}
+          <div className="flex items-center justify-center gap-4">
+            <h1
+              className="text-4xl md:text-5xl font-extrabold"
+              style={{ color: colors.primary }}
+            >
+              Elpriset
+            </h1>
+            <svg
+              className="w-12 h-12"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              style={{ color: colors.secondary }}
+            >
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+            <h1
+              className="text-4xl md:text-5xl font-extrabold"
+              style={{ color: colors.primary }}
+            >
+              Dashboard
+            </h1>
+          </div>
           <p className="mt-2 text-lg" style={{ color: colors.mutedText }}>
             Välj ditt elområde för att se priser och planera din förbrukning.
           </p>
         </header>
 
         <section
-          className="rounded-xl shadow-md p-4 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border transition-all duration-300"
+          className="rounded-xl shadow-md p-4 mb-8 md:sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border transition-all duration-300"
           style={{ backgroundColor: colors.card, borderColor: colors.border }}
         >
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -572,7 +639,19 @@ export default function App() {
           </div>
         )}
 
-        {!isLoading && !isError && dailyStats && (
+        {showTomorrowInfo && (
+          <div className="text-center py-16">
+            <p
+              className="text-xl font-semibold"
+              style={{ color: colors.mutedText }}
+            >
+              Prisdata för imorgon är inte tillgänglig ännu. Den blir
+              tillgänglig efter kl. 13:00.
+            </p>
+          </div>
+        )}
+
+        {!isLoading && !isError && dailyStats && !showTomorrowInfo && (
           <main>
             <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
               <StatCard
@@ -631,7 +710,7 @@ export default function App() {
                 Spotpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
                 {area})
               </h2>
-              <div className="chart-container">
+              <div className="h-100 w-full p-4 px-0 md:px-4">
                 <canvas ref={chartRef}></canvas>
               </div>
             </section>
@@ -685,20 +764,7 @@ export default function App() {
                 </div>
               </div>
             </section>
-            <Footer colors={colors} />
           </main>
-        )}
-
-        {!isLoading && !isError && !dailyStats && (
-          <div className="text-center py-16">
-            <p
-              className="text-xl font-semibold"
-              style={{ color: colors.mutedText }}
-            >
-              Prisdata för imorgon är inte tillgänglig ännu. Den blir
-              tillgänglig efter kl. 13:00.
-            </p>
-          </div>
         )}
       </div>
     </div>
@@ -755,7 +821,7 @@ const PlanningTable = ({ tasks, data, findBestTime, colors }) => (
               style={{ borderColor: colors.border }}
             >
               <td className="py-3 font-semibold" style={{ color: colors.text }}>
-                {task.icon} {task.name}
+                {task.icon} {task.name} ({task.duration} h)
               </td>
               <td
                 className="py-3 text-right font-bold"
