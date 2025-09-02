@@ -19,8 +19,10 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
         <div
           className="w-4 h-4 rounded-full"
           style={{
+            border: `1px solid ${themes[currentTheme].border}`,
             backgroundColor:
               themes[currentTheme].name === "Dark Mode"
+              || themes[currentTheme].name === "Calm Neutral"
                 ? themes[currentTheme].background
                 : themes[currentTheme].primary,
           }}
@@ -74,7 +76,7 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
                   className="w-4 h-4 rounded-full"
                   style={{
                     backgroundColor:
-                      theme.name === "Dark Mode"
+                      theme.name === "Dark Mode" || theme.name === "Calm Neutral"
                         ? theme.background
                         : theme.primary,
                   }}

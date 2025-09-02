@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase.js";
 
-export default function UserAuth() {
+export default function UserAuth({ colors }) {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
@@ -62,8 +62,18 @@ export default function UserAuth() {
       ) : (
         <button
           onClick={handleGoogleLogin}
-          className="flex items-center justify-center w-25 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md hover:border-gray-400 active:bg-gray-100 transition-all duration-200"
-        >Logga in
+          //   className="flex items-center justify-center w-25 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md hover:border-gray-400 active:bg-gray-100 transition-all duration-200"
+          // className="w-25 h-10 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:opacity-80"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:opacity-80"
+          style={{
+            //   backgroundColor: colors.primary,
+            //   color: colors.background,
+            backgroundColor: colors.card,
+            color: colors.text,
+            border: `1px solid ${colors.border}`,
+          }}
+        >
+          Logga in
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
@@ -82,10 +92,9 @@ export default function UserAuth() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-
         </button>
       )}
-
+      {error && console.error(error)}
       {/* {error && <p className="text-red-600 mt-4">{error}</p>} */}
     </div>
   );
