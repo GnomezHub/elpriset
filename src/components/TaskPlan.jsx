@@ -12,7 +12,10 @@ console.log("TaskPlan rendered");
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
-        .is("userId", null); // WHERE "userId" IS NULL
+        .is("userId", null)
+        .order("duration", { ascending: false });
+
+        // WHERE "userId" IS NULL
 
       if (error) setError(error.message);
       else setTasks(data);

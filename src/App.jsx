@@ -9,171 +9,10 @@ import React, {
 } from "react";
 import Chart from "chart.js/auto";
 import TaskPlan from "./components/TaskPlan";
+import { themes } from "./utils/themes";
+import ThemeSelector from "./components/ThemeSelector";
+import UserAuth from "./components/UserAuth";
 
-// Theme definitions
-const themes = {
-  calm: {
-    name: "Calm Neutral",
-    primary: "#2c3e50",
-    secondary: "#F28C28",
-    background: "#F8F7F4",
-    card: "#ffffff",
-    text: "#2c3e50",
-    mutedText: "#6b7280",
-    positive: "#16a34a",
-    negative: "#dc2626",
-    border: "#e5e7eb",
-  },
-  dark: {
-    name: "Dark Mode",
-    primary: "#f8fafc",
-    secondary: "#F28C28",
-    background: "#0f172a",
-    card: "#1e293b",
-    text: "#f8fafc",
-    mutedText: "#94a3b8",
-    positive: "#22c55e",
-    negative: "#ef4444",
-    border: "#334155",
-  },
-  ocean: {
-    name: "Ocean Blue",
-    primary: "#0ea5e9",
-    secondary: "#f59e0b",
-    background: "#f0f9ff",
-    card: "#ffffff",
-    text: "#0c4a6e",
-    mutedText: "#64748b",
-    positive: "#059669",
-    negative: "#dc2626",
-    border: "#bae6fd",
-  },
-  forest: {
-    name: "Forest Green",
-    primary: "#166534",
-    secondary: "#ea580c",
-    background: "#f0fdf4",
-    card: "#ffffff",
-    text: "#14532d",
-    mutedText: "#6b7280",
-    positive: "#16a34a",
-    negative: "#dc2626",
-    border: "#bbf7d0",
-  },
-  sunset: {
-    name: "Sunset Purple",
-    primary: "#7c3aed",
-    secondary: "#f59e0b",
-    background: "#faf5ff",
-    card: "#ffffff",
-    text: "#581c87",
-    mutedText: "#6b7280",
-    positive: "#16a34a",
-    negative: "#dc2626",
-    border: "#e9d5ff",
-  },
-};
-
-// Theme Selector Component
-const ThemeSelector = ({ currentTheme, onThemeChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:opacity-80"
-        style={{
-          backgroundColor: themes[currentTheme].card,
-          color: themes[currentTheme].text,
-          border: `1px solid ${themes[currentTheme].border}`,
-        }}
-      >
-        <div
-          className="w-4 h-4 rounded-full"
-          style={{
-            backgroundColor:
-              themes[currentTheme].name === "Dark Mode"
-                ? themes[currentTheme].background
-                : themes[currentTheme].primary,
-          }}
-        />
-        <span className="text-sm font-medium hidden sm:inline">
-          {themes[currentTheme].name}
-        </span>
-        <svg
-          className={`w-4 h-4 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          <div
-            className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-20"
-            style={{
-              backgroundColor: themes[currentTheme].card,
-              borderColor: themes[currentTheme].border,
-            }}
-          >
-            {Object.entries(themes).map(([key, theme]) => (
-              <button
-                key={key}
-                onClick={() => {
-                  onThemeChange(key);
-                  setIsOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:opacity-80 transition-all first:rounded-t-lg last:rounded-b-lg ${
-                  currentTheme === key ? "opacity-100" : "opacity-70"
-                }`}
-                style={{ color: themes[currentTheme].text }}
-              >
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{
-                    backgroundColor:
-                      theme.name === "Dark Mode"
-                        ? theme.background
-                        : theme.primary,
-                  }}
-                />
-                <span className="text-sm font-medium">{theme.name}</span>
-                {currentTheme === key && (
-                  <svg
-                    className="w-4 h-4 ml-auto"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-};
 
 // Main App component containing all the application logic and UI
 export default function App() {
@@ -586,14 +425,7 @@ export default function App() {
               <option value="SE3">SE3 - Södra Mellansverige</option>
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
-          </div>
-          <div className="flex-1 flex justify-end">
-            <ThemeSelector
-              currentTheme={currentTheme}
-              onThemeChange={setCurrentTheme}
-            />
-          </div>
-          <div
+          </div>          <div
             className="flex items-center gap-2 rounded-lg p-1 w-full md:w-auto justify-center"
             style={{ backgroundColor: colors.background }}
           >
@@ -615,6 +447,16 @@ export default function App() {
             >
               Imorgon
             </button>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <ThemeSelector
+              currentTheme={currentTheme}
+              onThemeChange={setCurrentTheme}
+            />
+          </div>
+
+          <div className=" flex justify-end md:justify-start">
+              <UserAuth colors={colors} />
           </div>
         </section>
 
@@ -770,7 +612,7 @@ export default function App() {
                 </div>
               </div>
             </section>
-            <Footer colors={themes[currentTheme]}/>
+            <Footer colors={colors}/>
           </main>
         )}
       </div>
@@ -804,44 +646,3 @@ const StatCard = ({
   </div>
 );
 
-// React component for the planning table
-const PlanningTable = ({ tasks, data, findBestTime, colors }) => (
-  <div className="overflow-x-auto">
-    <table className="w-full text-left">
-      <thead>
-        <tr className="border-b" style={{ borderColor: colors.border }}>
-          <th className="py-2" style={{ color: colors.text }}>
-            Aktivitet
-          </th>
-          <th className="py-2 text-right" style={{ color: colors.text }}>
-            Bästa starttid
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {tasks.map((task, index) => {
-          const bestTime = findBestTime(data, task.duration);
-          return (
-            <tr
-              key={index}
-              className="border-b"
-              style={{ borderColor: colors.border }}
-            >
-              <td className="py-3 font-semibold" style={{ color: colors.text }}>
-                {task.icon} {task.name} ({task.duration} h)
-              </td>
-              <td
-                className="py-3 text-right font-bold"
-                style={{ color: colors.positive }}
-              >
-                {bestTime.hour === -1
-                  ? "N/A"
-                  : `${String(bestTime.hour).padStart(2, "0")}:00`}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-);
