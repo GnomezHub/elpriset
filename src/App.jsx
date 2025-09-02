@@ -1,5 +1,5 @@
 // import blixt from "/vite.svg";
-// import Footer from "./components/Footer";
+import Footer from "./components/Footer";
 import React, {
   useState,
   useEffect,
@@ -8,6 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import Chart from "chart.js/auto";
+import TaskPlan from "./components/TaskPlan";
 
 // Theme definitions
 const themes = {
@@ -733,12 +734,17 @@ export default function App() {
                   Baserat på priserna, här är de bästa tiderna att köra dina
                   mest energikrävande apparater.
                 </p>
-                <PlanningTable
+                <TaskPlan
+                  d_data={dailyStats.dayData}
+                  findBestTime={findBestTimeForTask}
+                  colors={colors}
+                />
+                {/* <PlanningTable
                   tasks={tasks}
                   data={dailyStats.dayData}
                   findBestTime={findBestTimeForTask}
                   colors={colors}
-                />
+                /> */}
               </div>
               <div
                 className="p-6 rounded-xl shadow-md border transition-all duration-300"
@@ -764,6 +770,7 @@ export default function App() {
                 </div>
               </div>
             </section>
+            <Footer colors={themes[currentTheme]}/>
           </main>
         )}
       </div>
