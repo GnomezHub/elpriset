@@ -12,11 +12,11 @@ import TaskPlan from "./components/TaskPlan";
 import { themes } from "./utils/themes";
 import ThemeSelector from "./components/ThemeSelector";
 import UserAuth from "./components/UserAuth";
-
+import { supabase } from "./utils/supabase.js";
 
 // Main App component containing all the application logic and UI
 export default function App() {
-  const [area, setArea] = useState("SE4");
+  const [area, setArea] = useState("SE3");
   const [day, setDay] = useState("today");
   const [currentTheme, setCurrentTheme] = useState("calm");
   const [priceData, setPriceData] = useState([]);
@@ -30,6 +30,62 @@ export default function App() {
 
   // Get current theme colors
   const colors = useMemo(() => themes[currentTheme], [currentTheme]);
+  // Fetch and apply user's theme preference on user change
+  useEffect(() => {
+    const fetchUserTheme = async () => {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("theme")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Kunde inte hämta tema:", error.message);
+      } else if (data?.theme) {
+        setCurrentTheme(data.theme); // uppdaterar temat globalt
+      }
+    };
+
+    fetchUserTheme();
+  }, [user]);
+
+  useEffect(() => {
+  const fetchArea = async () => {
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("area")
+      .eq("id", user.id)
+      .single();
+
+    if (error) {
+      console.error("Kunde inte hämta area:", error.message);
+      return;
+    }
+
+    if (data?.area) {
+      setArea(data.area); // Sätt användarens sparade area
+    }
+  };
+
+  fetchArea();
+}, [user]);
+const handleAreaChange = async (e) => {
+  const selectedArea = e.target.value;
+  setArea(selectedArea); // Uppdatera UI direkt
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ area: selectedArea })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Kunde inte uppdatera area:", error.message);
+  }
+};
 
   // Define tasks with useMemo to avoid recreating it on every render
   const tasks = useMemo(
@@ -419,7 +475,7 @@ export default function App() {
             <select
               id="area-select"
               value={area}
-              onChange={(e) => setArea(e.target.value)}
+              onChange={handleAreaChange}
               className="area-select border-2 rounded-lg p-2 focus:outline-none transition w-full"
             >
               <option value="SE1">SE1 - Norra Sverige</option>
@@ -427,7 +483,8 @@ export default function App() {
               <option value="SE3">SE3 - Södra Mellansverige</option>
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
-          </div>          <div
+          </div>{" "}
+          <div
             className="flex items-center gap-2 rounded-lg p-1 w-full md:w-auto justify-center"
             style={{ backgroundColor: colors.background }}
           >
@@ -454,11 +511,11 @@ export default function App() {
             <ThemeSelector
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
+              user={user}
             />
           </div>
-
           <div className=" flex justify-end md:justify-start">
-              <UserAuth colors={colors} user={user} setUser={setUser} />
+            <UserAuth colors={colors} user={user} setUser={setUser} />
           </div>
         </section>
 
@@ -583,7 +640,6 @@ export default function App() {
                   findBestTime={findBestTimeForTask}
                   colors={colors}
                   user={user}
-
                 />
                 {/* <PlanningTable
                   tasks={tasks}
@@ -616,7 +672,7 @@ export default function App() {
                 </div>
               </div>
             </section>
-            <Footer colors={colors}/>
+            <Footer colors={colors} />
           </main>
         )}
       </div>
@@ -649,4 +705,3 @@ const StatCard = ({
     </p>
   </div>
 );
-

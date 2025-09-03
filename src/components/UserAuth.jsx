@@ -9,8 +9,13 @@ export default function UserAuth({ colors, user, setUser }) {
   useEffect(() => {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
-      if (error) setError(error.message);
-      else setUser(data.user);
+      if (error) {
+        console.log("getUser() - Error fetching user:", error.message);
+        setError(error.message);
+      } else {
+        console.log("getUser() - Current user:", data.user);
+        setUser(data.user);
+      }
     };
     getUser();
   }, []);
@@ -19,9 +24,9 @@ export default function UserAuth({ colors, user, setUser }) {
     const getSession = async () => {
       const { data, error } = await supabase.auth.getSession();
       if (data.session) {
-        console.log("Inloggad:", data.session.user);
+        console.log("getSession() - Inloggad:", data.session.user);
       } else {
-        console.warn("Ingen session hittades. " + error);
+        console.log("getSession() - Ingen session hittades. ", error);
       }
     };
     getSession();
@@ -46,29 +51,23 @@ export default function UserAuth({ colors, user, setUser }) {
   return (
     <div className="p-4 ">
       {user ? (
-
-
-    
-      <button  onClick={handleSignOut}
- 
-      className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
           style={{
             backgroundColor: colors.card,
             color: colors.negative,
             border: `1px solid ${colors.border}`,
           }}
-        >  
-        {/* {user.user_metadata.full_name.split(' ')[0]} */}
-           <img 
-        src={user.user_metadata.picture} 
-        alt="Profilbild" 
-        className="w-8 h-8 rounded-full" 
-      />
-<span className="text-sm font-medium hidden sm:inline">
-    Logga ut</span>
-      </button>
- 
-     
+        >
+          {/* {user.user_metadata.full_name.split(' ')[0]} */}
+          <img
+            src={user.user_metadata.picture}
+            alt="Profilbild"
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-sm font-medium hidden sm:inline">Logga ut</span>
+        </button>
       ) : (
         <button
           onClick={handleGoogleLogin}

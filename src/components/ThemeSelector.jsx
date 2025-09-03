@@ -1,9 +1,28 @@
 import React, { useState } from "react";
 import { themes } from "../utils/themes";
+import { supabase } from "../utils/supabase.js";
 
 // Theme Selector Component
-export default function ThemeSelector ({ currentTheme, onThemeChange }) {
+export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
   const [isOpen, setIsOpen] = useState(false);
+  console.log("ThemeSelector rendered user: ", user);
+  console.log("ThemeSelector currentTheme: ", currentTheme);
+
+  const handleThemeChange = async (key) => {
+    onThemeChange(key);
+    setIsOpen(false);
+
+    if (user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ theme: key })
+        .eq("id", user.id);
+
+      if (error) {
+        console.error("Kunde inte spara tema:", error.message);
+      }
+    }
+  };
 
   return (
     <div className="relative">
@@ -21,8 +40,8 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
           style={{
             border: `1px solid ${themes[currentTheme].border}`,
             backgroundColor:
-              themes[currentTheme].name === "Dark Mode"
-              || themes[currentTheme].name === "Calm Neutral"
+              themes[currentTheme].name === "Dark Mode" ||
+              themes[currentTheme].name === "Calm Neutral"
                 ? themes[currentTheme].background
                 : themes[currentTheme].primary,
           }}
@@ -63,10 +82,7 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
             {Object.entries(themes).map(([key, theme]) => (
               <button
                 key={key}
-                onClick={() => {
-                  onThemeChange(key);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleThemeChange(key)}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:opacity-80 transition-all first:rounded-t-lg last:rounded-b-lg ${
                   currentTheme === key ? "opacity-100" : "opacity-70"
                 }`}
@@ -76,7 +92,8 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
                   className="w-4 h-4 rounded-full"
                   style={{
                     backgroundColor:
-                      theme.name === "Dark Mode" || theme.name === "Calm Neutral"
+                      theme.name === "Dark Mode" ||
+                      theme.name === "Calm Neutral"
                         ? theme.background
                         : theme.primary,
                   }}
@@ -102,4 +119,4 @@ export default function ThemeSelector ({ currentTheme, onThemeChange }) {
       )}
     </div>
   );
-};
+}

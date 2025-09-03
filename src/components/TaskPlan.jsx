@@ -11,7 +11,7 @@ export default function TaskPlan({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log("TaskPlan rendered user: ", user);
+//  console.log("TaskPlan rendered user: ", user);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -20,12 +20,10 @@ export default function TaskPlan({
         .select("*")
         //.is("userId", user ? user.id : null)
         .order("duration", { ascending: false });
-
-
       if (error) setError(error.message);
       else setTasks(data);
       setLoading(false);
-      console.log("Fetched tasks:", data);
+   //   console.log("Fetched tasks:", data);
     };
     fetchTasks();
   }, [user]);
@@ -49,7 +47,7 @@ export default function TaskPlan({
         <tbody>
           {tasks.map((task, index) => {
             const bestTime = findBestTime(d_data, task.duration);
-            console.log(task.name, bestTime);
+          //  console.log(task.name, bestTime);
             return (
               <tr
                 key={index}
