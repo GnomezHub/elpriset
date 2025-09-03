@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase.js";
 
-export default function UserAuth({ colors }) {
-  const [user, setUser] = useState(null);
+export default function UserAuth({ colors, user, setUser }) {
+  //const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
   // Hämta aktuell användare vid mount
@@ -46,25 +46,35 @@ export default function UserAuth({ colors }) {
   return (
     <div className="p-4 ">
       {user ? (
-        <div>
-          {/* <p className="mb-2">
-            Inloggad som: <strong>{user.email}</strong>
-          </p> */}
-          {/* <p>Hej {user.user_metadata.full_name}</p> */}
-          {console.log(user)}
-          <button
-            onClick={handleSignOut}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Logga ut
-          </button>
-        </div>
+
+
+    
+      <button  onClick={handleSignOut}
+ 
+      className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
+          style={{
+            backgroundColor: colors.card,
+            color: colors.negative,
+            border: `1px solid ${colors.border}`,
+          }}
+        >  
+        {/* {user.user_metadata.full_name.split(' ')[0]} */}
+           <img 
+        src={user.user_metadata.picture} 
+        alt="Profilbild" 
+        className="w-8 h-8 rounded-full" 
+      />
+<span className="text-sm font-medium hidden sm:inline">
+    Logga ut</span>
+      </button>
+ 
+     
       ) : (
         <button
           onClick={handleGoogleLogin}
           //   className="flex items-center justify-center w-25 h-10 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 hover:shadow-md hover:border-gray-400 active:bg-gray-100 transition-all duration-200"
           // className="w-25 h-10 px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:opacity-80"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:opacity-80"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
           style={{
             //   backgroundColor: colors.primary,
             //   color: colors.background,

@@ -26,6 +26,8 @@ export default function App() {
   const chartInstanceRef = useRef(null);
   const [showTomorrowInfo, setShowTomorrowInfo] = useState(false);
 
+  const [user, setUser] = useState(null);
+
   // Get current theme colors
   const colors = useMemo(() => themes[currentTheme], [currentTheme]);
 
@@ -456,7 +458,7 @@ export default function App() {
           </div>
 
           <div className=" flex justify-end md:justify-start">
-              <UserAuth colors={colors} />
+              <UserAuth colors={colors} user={user} setUser={setUser} />
           </div>
         </section>
 
@@ -580,6 +582,8 @@ export default function App() {
                   d_data={dailyStats.dayData}
                   findBestTime={findBestTimeForTask}
                   colors={colors}
+                  user={user}
+
                 />
                 {/* <PlanningTable
                   tasks={tasks}

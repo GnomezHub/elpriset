@@ -1,21 +1,26 @@
 import { supabase } from "../utils/supabase.js";
 import { useEffect, useState } from "react";
 
-export default function TaskPlan({ d_data, findBestTime, colors }) {
+export default function TaskPlan({
+  d_data,
+  findBestTime,
+  colors,
+  user,
+}) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-console.log("TaskPlan rendered");
+
+  console.log("TaskPlan rendered user: ", user);
 
   useEffect(() => {
     const fetchTasks = async () => {
       const { data, error } = await supabase
         .from("tasks")
         .select("*")
-        .is("userId", null)
+        //.is("userId", user ? user.id : null)
         .order("duration", { ascending: false });
 
-        // WHERE "userId" IS NULL
 
       if (error) setError(error.message);
       else setTasks(data);
@@ -23,7 +28,7 @@ console.log("TaskPlan rendered");
       console.log("Fetched tasks:", data);
     };
     fetchTasks();
-  }, []);
+  }, [user]);
 
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Error: {error}</p>;
