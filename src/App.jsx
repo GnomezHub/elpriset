@@ -87,13 +87,7 @@ export default function App() {
     }
   };
 
-
-  const [tasks, setTasks] = useState([
-    // { name: "Tvättmaskin", duration: 3, icon: "🧺" },
-    // { name: "Dammsugare", duration: 1, icon: "🧹" },
-    // { name: "Diskmaskin", duration: 2, icon: "🍽️" },
-    // { name: "Ladda elbil", duration: 4, icon: "🚗" },
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   // Helper function to fetch electricity price data from the API
   const fetchData = useCallback(async () => {
@@ -413,11 +407,6 @@ export default function App() {
             box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.1), 1px 1px 2px 0 rgba(0, 0, 0, 0.06);
             color: ${colors.primary};
         }
-        .chart-container {
-          height: 400px;
-          width: 100%;
-          padding: 1rem;
-        }
         .area-select {
           background-color: ${colors.background};
           border-color: ${colors.border};
@@ -490,7 +479,7 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "today" ? "btn-active" : ""
               }`}
-              style={{ color: colors.mutedText }}
+            // style={{ color: colors.mutedText }}
             >
               Idag
             </button>
@@ -499,19 +488,17 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "tomorrow" ? "btn-active" : ""
               }`}
-              style={{ color: colors.mutedText }}
+            //  style={{ color: colors.mutedText }}
             >
               Imorgon
             </button>
           </div>
-          <div className="flex-1 flex justify-end">
+          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
             <ThemeSelector
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
               user={user}
             />
-          </div>
-          <div className=" flex justify-end md:justify-start">
             <UserAuth colors={colors} user={user} setUser={setUser} />
           </div>
         </section>
@@ -615,23 +602,7 @@ export default function App() {
             </section>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div
-                className="p-6 rounded-xl shadow-md border transition-all duration-300"
-                style={{
-                  backgroundColor: colors.card,
-                  borderColor: colors.border,
-                }}
-              >
-                <h2
-                  className="text-xl font-bold mb-4"
-                  style={{ color: colors.primary }}
-                >
-                  Planeringshjälp
-                </h2>
-                <p className="mb-4" style={{ color: colors.mutedText }}>
-                  Baserat på priserna, här är de bästa tiderna att köra dina
-                  mest energikrävande apparater.
-                </p>
+
                 <TaskPlan
                   d_data={dailyStats.dayData}
                   findBestTime={findBestTimeForTask}
@@ -640,13 +611,7 @@ export default function App() {
                   tasks={tasks}
                   setTasks={setTasks}
                 />
-                {/* <PlanningTable
-                  tasks={tasks}
-                  data={dailyStats.dayData}
-                  findBestTime={findBestTimeForTask}
-                  colors={colors}
-                /> */}
-              </div>
+             
               <div
                 className="p-6 rounded-xl shadow-md border transition-all duration-300"
                 style={{
