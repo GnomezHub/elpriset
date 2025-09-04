@@ -52,51 +52,48 @@ export default function App() {
   }, [user]);
 
   useEffect(() => {
-  const fetchArea = async () => {
-    if (!user) return;
+    const fetchArea = async () => {
+      if (!user) return;
 
-    const { data, error } = await supabase
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("area")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error("Kunde inte hämta area:", error.message);
+        return;
+      }
+
+      if (data?.area) {
+        setArea(data.area); // Sätt användarens sparade area
+      }
+    };
+
+    fetchArea();
+  }, [user]);
+  const handleAreaChange = async (e) => {
+    const selectedArea = e.target.value;
+    setArea(selectedArea); // Uppdatera UI direkt
+
+    const { error } = await supabase
       .from("profiles")
-      .select("area")
-      .eq("id", user.id)
-      .single();
+      .update({ area: selectedArea })
+      .eq("id", user.id);
 
     if (error) {
-      console.error("Kunde inte hämta area:", error.message);
-      return;
-    }
-
-    if (data?.area) {
-      setArea(data.area); // Sätt användarens sparade area
+      console.error("Kunde inte uppdatera area:", error.message);
     }
   };
 
-  fetchArea();
-}, [user]);
-const handleAreaChange = async (e) => {
-  const selectedArea = e.target.value;
-  setArea(selectedArea); // Uppdatera UI direkt
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ area: selectedArea })
-    .eq("id", user.id);
-
-  if (error) {
-    console.error("Kunde inte uppdatera area:", error.message);
-  }
-};
-
-  // Define tasks with useMemo to avoid recreating it on every render
-  const tasks = useMemo(
-    () => [
-      { name: "Tvättmaskin", duration: 3, icon: "🧺" },
-      { name: "Dammsugare", duration: 1, icon: "🧹" },
-      { name: "Diskmaskin", duration: 2, icon: "🍽️" },
-      { name: "Ladda elbil", duration: 4, icon: "🚗" },
-    ],
-    []
-  );
+  const [tasks, setTasks] = useState([
+    // { name: "Tvättmaskin", duration: 3, icon: "🧺" },
+    // { name: "Dammsugare", duration: 1, icon: "🧹" },
+    // { name: "Diskmaskin", duration: 2, icon: "🍽️" },
+    // { name: "Ladda elbil", duration: 4, icon: "🚗" },
+  ]);
 
   // Helper function to fetch electricity price data from the API
   const fetchData = useCallback(async () => {
@@ -328,7 +325,7 @@ const handleAreaChange = async (e) => {
   // Effect hook to update the chart whenever priceData or the chart logic changes
   useEffect(() => {
     updateChart(priceData);
-  }, [priceData, updateChart]);
+  }, [priceData, updateChart, tasks]); // Lägg till tasks här
 
   // Derived state to compute stats and insights
   const getDailyStats = useCallback(() => {
@@ -640,6 +637,8 @@ const handleAreaChange = async (e) => {
                   findBestTime={findBestTimeForTask}
                   colors={colors}
                   user={user}
+                  tasks={tasks}
+                  setTasks={setTasks}
                 />
                 {/* <PlanningTable
                   tasks={tasks}
