@@ -18,9 +18,16 @@ export default function TaskPlan({
   const [editingTitle, setEditingTitle] = useState("");
 
   const ICONS = [
+    "🔌",
+    "💡",
+    "🔥",
+    "🌡️",
+    "🔋",
+    "🚿",
     "⚡️",
     "🧺",
     "🧹",
+    "🥔",
     "🍽️",
     "🚗",
     "🛁",
