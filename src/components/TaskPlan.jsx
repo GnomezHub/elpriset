@@ -326,16 +326,16 @@ export default function TaskPlan({
                       </button>
                     )}
                   </td>
-                  <td className="p-4 font-semibold relative">
+                  <td className="p-4 pl-6 font-semibold relative">
                     <div
-                      className="flex items-center space-x-2 transition-all duration-200 ease-in-out"
+                      className="flex items-center text-center space-x-2 transition-all duration-200 ease-in-out"
                       style={{ color: colors.text }}
                     >
-                      <span className="cursor-default font-semibold text-sm sm:text-base">
+                      <span className="cursor-default text-center font-semibold text-sm sm:text-base">
                         {task.duration} timm{task.duration > 1 ? "ar" : "e"}
                       </span>
                       <div
-                        className={`absolute right-4 flex flex-col space-y-1 transform transition-all duration-200 ${
+                        className={`absolute left-26 flex flex-col space-y-1 transform transition-all duration-200 ${
                           isHovered
                             ? "translate-x-0 opacity-100"
                             : "translate-x-12 opacity-0"

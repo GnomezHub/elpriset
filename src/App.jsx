@@ -195,10 +195,10 @@ export default function App() {
 
       const now = new Date();
       const currentHour = now.getHours();
-
+      console.log("Current hour:", currentHour);
       const filteredData =
-        day === "today"
-          ? data.filter((p) => new Date(p.time_start).getHours() >= currentHour)
+        day === "today" // && currentHour > 5
+          ? data.filter((p) => new Date(p.time_start).getHours() >= currentHour-5)
           : data;
 
       const labels = filteredData.map(
@@ -450,7 +450,7 @@ export default function App() {
           className="rounded-xl shadow-md p-4 mb-8 md:sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border transition-all duration-300"
           style={{ backgroundColor: colors.card, borderColor: colors.border }}
         >
-          <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="flex items-center gap-4 w-full lg:min-w-110  md:w-auto">
             <label
               htmlFor="area-select"
               className="font-semibold"
@@ -470,8 +470,10 @@ export default function App() {
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
           </div>{" "}
-          <div
-            className="flex items-center gap-2 rounded-lg p-1 w-full md:w-auto justify-center"
+
+          <div className="flex items-center gap-2 justify-between w-full md:w-auto">
+                     <div
+            className="flex items-center gap-2 rounded-lg px-4 w-full max-w-50 md:w-auto justify-center"
             style={{ backgroundColor: colors.background }}
           >
             <button
@@ -479,7 +481,7 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "today" ? "btn-active" : ""
               }`}
-            // style={{ color: colors.mutedText }}
+              // style={{ color: colors.mutedText }}
             >
               Idag
             </button>
@@ -488,12 +490,12 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "tomorrow" ? "btn-active" : ""
               }`}
-            //  style={{ color: colors.mutedText }}
+              //  style={{ color: colors.mutedText }}
             >
               Imorgon
             </button>
           </div>
-          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
+           
             <ThemeSelector
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
@@ -602,16 +604,15 @@ export default function App() {
             </section>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TaskPlan
+                d_data={dailyStats.dayData}
+                findBestTime={findBestTimeForTask}
+                colors={colors}
+                user={user}
+                tasks={tasks}
+                setTasks={setTasks}
+              />
 
-                <TaskPlan
-                  d_data={dailyStats.dayData}
-                  findBestTime={findBestTimeForTask}
-                  colors={colors}
-                  user={user}
-                  tasks={tasks}
-                  setTasks={setTasks}
-                />
-             
               <div
                 className="p-6 rounded-xl shadow-md border transition-all duration-300"
                 style={{

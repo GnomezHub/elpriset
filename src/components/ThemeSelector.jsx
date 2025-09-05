@@ -46,7 +46,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
                 : themes[currentTheme].primary,
           }}
         />
-        <span className="text-sm font-medium hidden sm:inline">
+        <span className="text-sm font-medium">
           {themes[currentTheme].name}
         </span>
         <svg
