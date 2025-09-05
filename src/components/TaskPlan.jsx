@@ -66,7 +66,6 @@ export default function TaskPlan({
     "🪮",
     "🪯",
     "🪰",
-
   ];
 
   const [iconPickerTaskId, setIconPickerTaskId] = useState(null);
@@ -145,15 +144,16 @@ export default function TaskPlan({
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const { data, error } = await supabase
-        .from("tasks")
-        .select("*")
-        //.is("userId", user ? user.id : null)
-        .order("duration", { ascending: true });
+      let query = supabase.from("tasks").select("*");
+      if (user) {
+        query = query.eq("userId", user.id);
+      }
+      const { data, error } = await query.order("duration", {
+        ascending: true,
+      });
       if (error) setError(error.message);
       else setTasks(data);
       setLoading(false);
-      //   console.log("Fetched tasks:", data);
     };
     fetchTasks();
   }, [user]);
@@ -277,8 +277,8 @@ export default function TaskPlan({
                         ref={iconPickerRef}
                         className="absolute z-20 top-8 bg-white rounded-xl shadow-lg border p-2 flex flex-wrap gap-2"
                         style={{
-                        //  left: "50%",
-                         // transform: "translateX(-50%)",
+                          //  left: "50%",
+                          // transform: "translateX(-50%)",
                           backgroundColor: colors.card,
                           borderColor: colors.border,
                           maxWidth: "600px",

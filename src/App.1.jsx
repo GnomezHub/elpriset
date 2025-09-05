@@ -1,23 +1,21 @@
-// import blixt from "/vite.svg";
-import Footer from "./components/Footer";
+import { Chart } from "chart.js";
 import React, {
   useState,
-  useEffect,
   useRef,
-  useCallback,
   useMemo,
+  useEffect,
+  useCallback,
 } from "react";
-import Chart from "chart.js/auto";
+import { StatCard } from "./App";
+import Footer from "./components/Footer";
 import TaskPlan from "./components/TaskPlan";
-import { themes } from "./utils/themes";
 import ThemeSelector from "./components/ThemeSelector";
 import UserAuth from "./components/UserAuth";
-import { supabase } from "./utils/supabase.js";
-import Insights from "./components/Insights.jsx";
-import AdminPanel from "./components/AdminUsers.jsx";
-import AdminThemes from "./components/AdminThemes.jsx";
+import { supabase } from "./utils/supabase";
+import { themes } from "./utils/themes";
 
 // Main App component containing all the application logic and UI
+
 export default function App() {
   const [area, setArea] = useState("SE3");
   const [day, setDay] = useState("today");
@@ -28,25 +26,8 @@ export default function App() {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
   const [showTomorrowInfo, setShowTomorrowInfo] = useState(false);
+
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  //  const [selectedUserId, setSelectedUserId] = useState(null);
-  useEffect(() => {
-    const fetchRole = async () => {
-      if (!user) {
-        setUserRole(null);
-        return;
-      }
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-      if (!error && data?.role) setUserRole(data.role);
-      else setUserRole(null);
-    };
-    fetchRole();
-  }, [user]);
 
   // Get current theme colors
   const colors = useMemo(() => themes[currentTheme], [currentTheme]);
@@ -501,7 +482,6 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "today" ? "btn-active" : ""
               }`}
-              // style={{ color: colors.mutedText }}
             >
               Idag
             </button>
@@ -510,7 +490,6 @@ export default function App() {
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
                 day === "tomorrow" ? "btn-active" : ""
               }`}
-              //  style={{ color: colors.mutedText }}
             >
               Imorgon
             </button>
@@ -632,17 +611,31 @@ export default function App() {
                 tasks={tasks}
                 setTasks={setTasks}
               />
-              {userRole === "admin" ? (
-                <AdminPanel colors={colors} user={user} />
-              ) : (
-                <Insights colors={colors} insights={insights} />
-              )}
+
+              <div
+                className="p-6 rounded-xl shadow-md border transition-all duration-300"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                }}
+              >
+                <h2
+                  className="text-xl font-bold mb-4"
+                  style={{ color: colors.primary }}
+                >
+                  Dagens Insikter
+                </h2>
+                <div className="space-y-3" style={{ color: colors.text }}>
+                  {insights &&
+                    insights.map((insight, index) => (
+                      <p
+                        key={index}
+                        dangerouslySetInnerHTML={{ __html: insight }}
+                      />
+                    ))}
+                </div>
+              </div>
             </section>
-            {userRole && (
-              <section>
-                <AdminThemes colors={colors} user={user} />
-              </section>
-            )}
             <Footer colors={colors} />
           </main>
         )}
@@ -650,29 +643,3 @@ export default function App() {
     </div>
   );
 }
-
-// React component for the KPI cards
-const StatCard = ({
-  title,
-  value,
-  unit,
-  color,
-  backgroundColor,
-  borderColor,
-  mutedTextColor,
-}) => (
-  <div
-    className="p-4 rounded-xl shadow-sm text-center border transition-all duration-300"
-    style={{ backgroundColor, borderColor }}
-  >
-    <h3 className="text-sm font-semibold" style={{ color: mutedTextColor }}>
-      {title}
-    </h3>
-    <p className="text-2xl md:text-3xl font-bold" style={{ color: color }}>
-      {value}
-    </p>
-    <p className="text-xs" style={{ color: mutedTextColor }}>
-      {unit}
-    </p>
-  </div>
-);
