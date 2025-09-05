@@ -638,7 +638,7 @@ export default function App() {
                 <Insights colors={colors} insights={insights} />
               )}
             </section>
-            {userRole && (
+            {userRole === "admin" && (
               <section>
                 <AdminThemes colors={colors} user={user} />
               </section>

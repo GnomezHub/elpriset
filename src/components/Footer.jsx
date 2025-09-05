@@ -5,7 +5,7 @@ export default function Footer({ colors }) {
       {" "}
       {/* <AuthTest /> */}
       <footer
-        className="text-center py-8 mt-8 border-t"
+        className="text-center py-8 mt-18 border-t"
         style={{ borderColor: colors.border }}
       >
         <p className="text-sm mt-2" style={{ color: colors.primary }}>
