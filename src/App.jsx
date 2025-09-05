@@ -198,7 +198,9 @@ export default function App() {
       console.log("Current hour:", currentHour);
       const filteredData =
         day === "today" // && currentHour > 5
-          ? data.filter((p) => new Date(p.time_start).getHours() >= currentHour-5)
+          ? data.filter(
+              (p) => new Date(p.time_start).getHours() >= currentHour - 5
+            )
           : data;
 
       const labels = filteredData.map(
@@ -470,9 +472,7 @@ export default function App() {
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
           </div>{" "}
-
-          <div className="flex items-center gap-2 justify-between w-full md:w-auto">
-                     <div
+          <div
             className="flex items-center gap-2 rounded-lg px-4 w-full max-w-50 md:w-auto justify-center"
             style={{ backgroundColor: colors.background }}
           >
@@ -495,7 +495,7 @@ export default function App() {
               Imorgon
             </button>
           </div>
-           
+          <div className="flex items-center gap-2 justify-center w-full md:w-auto">
             <ThemeSelector
               currentTheme={currentTheme}
               onThemeChange={setCurrentTheme}
