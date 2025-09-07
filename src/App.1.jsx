@@ -236,7 +236,7 @@ export default function App() {
           hour >= bestPeriod.hour &&
           hour < bestPeriod.hour + longestTaskDuration
         ) {
-          return colors.positive;
+          return colors._positive;
         }
 
         // Color red if the hour is within the worst period for the longest task
@@ -245,11 +245,11 @@ export default function App() {
           hour >= worstPeriod.hour &&
           hour < worstPeriod.hour + longestTaskDuration
         ) {
-          return colors.negative;
+          return colors._negative;
         }
 
         // Default color for all other bars
-        return colors.primary;
+        return colors._primary;
       });
 
       chartInstanceRef.current = new Chart(chartRef.current, {
@@ -273,10 +273,10 @@ export default function App() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: colors.card,
-              titleColor: colors.text,
-              bodyColor: colors.text,
-              borderColor: colors.border,
+              backgroundColor: colors._card,
+              titleColor: colors._text,
+              bodyColor: colors._text,
+              borderColor: colors._border,
               borderWidth: 1,
               callbacks: {
                 title: (tooltipItems) => `Kl. ${tooltipItems[0].label}`,
@@ -291,10 +291,10 @@ export default function App() {
               title: {
                 display: true,
                 text: "öre/kWh",
-                color: colors.mutedText,
+                color: colors._mutedText,
               },
-              ticks: { color: colors.mutedText },
-              grid: { color: colors.border },
+              ticks: { color: colors._mutedText },
+              grid: { color: colors._border },
             },
             x: {
               ticks: { color: colors.mutedText },

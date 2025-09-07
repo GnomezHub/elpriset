@@ -255,7 +255,7 @@ export default function App() {
           hour >= bestPeriod.hour &&
           hour < bestPeriod.hour + longestTaskDuration
         ) {
-          return colors.positive;
+          return colors._positive;
         }
 
         // Color red if the hour is within the worst period for the longest task
@@ -264,11 +264,11 @@ export default function App() {
           hour >= worstPeriod.hour &&
           hour < worstPeriod.hour + longestTaskDuration
         ) {
-          return colors.negative;
+          return colors._negative;
         }
 
         // Default color for all other bars
-        return colors.primary;
+        return colors._primary;
       });
 
       chartInstanceRef.current = new Chart(chartRef.current, {
@@ -292,10 +292,10 @@ export default function App() {
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: colors.card,
-              titleColor: colors.text,
-              bodyColor: colors.text,
-              borderColor: colors.border,
+              backgroundColor: colors._card,
+              titleColor: colors._text,
+              bodyColor: colors._text,
+              borderColor: colors._border,
               borderWidth: 1,
               callbacks: {
                 title: (tooltipItems) => `Kl. ${tooltipItems[0].label}`,
@@ -310,10 +310,10 @@ export default function App() {
               title: {
                 display: true,
                 text: "öre/kWh",
-                color: colors.mutedText,
+                color: colors._mutedText,
               },
-              ticks: { color: colors.mutedText },
-              grid: { color: colors.border },
+              ticks: { color: colors._mutedText },
+              grid: { color: colors._border },
             },
             x: {
               ticks: { color: colors.mutedText },
@@ -406,11 +406,11 @@ export default function App() {
       )}:00`;
       return [
         `✅ Spotpriset för dagen är cirka <strong class="font-bold">${avgPrice} öre/kWh</strong>.`,
-        `💡 De absolut billigaste timmarna har ett spotpris runt <strong class="font-bold" style="color: ${colors.positive}">${minPrice} öre/kWh</strong>.`,
+        `💡 De absolut billigaste timmarna har ett spotpris runt <strong class="font-bold" style="color: ${colors._positive}">${minPrice} öre/kWh</strong>.`,
         `🕐 Det är mest fördelaktigt att förbruka el under perioden <strong class="font-bold">${cheapestPeriod}</strong>.`,
       ];
     },
-    [convertToSekOre, colors.positive]
+    [convertToSekOre, colors._positive]
   );
 
   const dailyStats = getDailyStats();
@@ -421,21 +421,22 @@ export default function App() {
   return (
     <div
       className="min-h-screen py-8 transition-all duration-300"
-      style={{ backgroundColor: colors.background, color: colors.text }}
+      style={{ backgroundColor: colors._background, color: colors._text }}
     >
       <style>{`
         .btn-active {
-            background-color: ${colors.card};
-            box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.1), 1px 1px 2px 0 rgba(0, 0, 0, 0.06);
-            color: ${colors.primary};
+        background-color: ${colors._card};
+        box-shadow: 1px 1px 3px 0 rgba(0, 0, 0, 0.1), 1px 1px 2px 0 rgba(0, 0, 0, 0.06);
+        color: ${colors._primary};
+          border-color: ${colors._border};
         }
         .area-select {
-          background-color: ${colors.background};
-          border-color: ${colors.border};
-          color: ${colors.text};
+          background-color: ${colors._background};
+          border-color: ${colors._border};
+          color: ${colors._text};
         }
         .area-select:focus {
-          border-color: ${colors.secondary};
+    border-color: ${colors._secondary};
         }
       `}</style>
       <div className="container mx-auto p-4 md:p-8 max-w-7xl">
@@ -444,7 +445,7 @@ export default function App() {
           <div className="flex items-center justify-center gap-4">
             <h1
               className="text-4xl md:text-5xl font-extrabold"
-              style={{ color: colors.primary }}
+              style={{ color: colors._primary }}
             >
               Elpriset
             </h1>
@@ -452,31 +453,31 @@ export default function App() {
               className="w-12 h-12"
               viewBox="0 0 24 24"
               fill="currentColor"
-              style={{ color: colors.secondary }}
+              style={{ color: colors._secondary }}
             >
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
             <h1
               className="text-4xl md:text-5xl font-extrabold"
-              style={{ color: colors.primary }}
+              style={{ color: colors._primary }}
             >
               Dashboard
             </h1>
           </div>
-          <p className="mt-2 text-lg" style={{ color: colors.mutedText }}>
+          <p className="mt-2 text-lg" style={{ color: colors._mutedText }}>
             Välj ditt elområde för att se priser och planera din förbrukning.
           </p>
         </header>
 
         <section
           className="rounded-xl shadow-md p-4 mb-8 md:sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4 border transition-all duration-300"
-          style={{ backgroundColor: colors.card, borderColor: colors.border }}
+          style={{ backgroundColor: colors._card, borderColor: colors._border }}
         >
           <div className="flex items-center gap-4 w-full lg:min-w-110  md:w-auto">
             <label
               htmlFor="area-select"
               className="font-semibold"
-              style={{ color: colors.primary }}
+              style={{ color: colors._primary }}
             >
               Elområde:
             </label>
@@ -491,15 +492,18 @@ export default function App() {
               <option value="SE3">SE3 - Södra Mellansverige</option>
               <option value="SE4">SE4 - Södra Sverige</option>
             </select>
-          </div>{" "}
+          </div>
           <div
-            className="flex items-center gap-2 rounded-lg px-4 w-full max-w-50 md:w-auto justify-center"
-            style={{ backgroundColor: colors.background }}
+            className="flex items-center border-1 gap-2 rounded-lg px-4 w-full max-w-50 md:w-auto justify-center"
+            style={{
+              backgroundColor: colors._background,
+              borderColor: colors._border,
+            }}
           >
             <button
               onClick={() => setDay("today")}
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
-                day === "today" ? "btn-active" : ""
+                day === "today" ? "btn-active border-1" : ""
               }`}
               // style={{ color: colors.mutedText }}
             >
@@ -508,7 +512,7 @@ export default function App() {
             <button
               onClick={() => setDay("tomorrow")}
               className={`px-4 py-2 rounded-md font-semibold transition w-1/2 md:w-auto ${
-                day === "tomorrow" ? "btn-active" : ""
+                day === "tomorrow" ? "btn-active border-1" : ""
               }`}
               //  style={{ color: colors.mutedText }}
             >
@@ -529,7 +533,7 @@ export default function App() {
           <div className="text-center py-16">
             <p
               className="text-xl font-semibold"
-              style={{ color: colors.mutedText }}
+              style={{ color: colors._mutedText }}
             >
               Hämtar elpriser...
             </p>
@@ -540,7 +544,7 @@ export default function App() {
           <div className="text-center py-16">
             <p
               className="text-xl font-semibold"
-              style={{ color: colors.negative }}
+              style={{ color: colors._negative }}
             >
               Kunde inte hämta elprisdata. Försök igen senare.
             </p>
@@ -566,54 +570,54 @@ export default function App() {
                 title="Spotpris just nu"
                 value={dailyStats.currentPrice}
                 unit="öre/kWh"
-                color={colors.primary}
-                backgroundColor={colors.card}
-                borderColor={colors.border}
-                textColor={colors.text}
-                mutedTextColor={colors.mutedText}
+                color={colors._primary}
+                backgroundColor={colors._card}
+                borderColor={colors._border}
+                textColor={colors._text}
+                mutedTextColor={colors._mutedText}
               />
               <StatCard
                 title="Lägsta spotpris"
                 value={dailyStats.minPrice}
                 unit="öre/kWh"
-                color={colors.positive}
-                backgroundColor={colors.card}
-                borderColor={colors.border}
-                textColor={colors.text}
-                mutedTextColor={colors.mutedText}
+                color={colors._positive}
+                backgroundColor={colors._card}
+                borderColor={colors._border}
+                textColor={colors._text}
+                mutedTextColor={colors._mutedText}
               />
               <StatCard
                 title="Högsta spotpris"
                 value={dailyStats.maxPrice}
                 unit="öre/kWh"
-                color={colors.negative}
-                backgroundColor={colors.card}
-                borderColor={colors.border}
-                textColor={colors.text}
-                mutedTextColor={colors.mutedText}
+                color={colors._negative}
+                backgroundColor={colors._card}
+                borderColor={colors._border}
+                textColor={colors._text}
+                mutedTextColor={colors._mutedText}
               />
               <StatCard
                 title="Snittspotpris"
                 value={dailyStats.avgPrice}
                 unit="öre/kWh"
-                color={colors.primary}
-                backgroundColor={colors.card}
-                borderColor={colors.border}
-                textColor={colors.text}
-                mutedTextColor={colors.mutedText}
+                color={colors._primary}
+                backgroundColor={colors._card}
+                borderColor={colors._border}
+                textColor={colors._text}
+                mutedTextColor={colors._mutedText}
               />
             </section>
 
             <section
               className="p-4 md:p-6 rounded-xl shadow-md mb-8 border transition-all duration-300"
               style={{
-                backgroundColor: colors.card,
-                borderColor: colors.border,
+                backgroundColor: colors._card,
+                borderColor: colors._border,
               }}
             >
               <h2
                 className="text-xl font-bold text-center mb-4"
-                style={{ color: colors.primary }}
+                style={{ color: colors._primary }}
               >
                 Spotpris per timme - {day === "today" ? "Idag" : "Imorgon"} (
                 {area})

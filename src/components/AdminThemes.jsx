@@ -8,20 +8,20 @@ export default function AdminThemes({ colors, user }) {
     <div
       className="p-6 my-8 rounded-xl shadow-md border transition-all duration-300"
       style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors._card,
+        borderColor: colors._border,
       }}
     >
       <h2
         className="text-xl font-bold text-center mb-4"
-        style={{ color: colors.primary }}
+        style={{ color: colors._primary }}
       >
         Teman panel
       </h2>
-      <div className="h-100 w-full p-4 px-0 md:px-4">
+      <div className="h-full w-full p-4 px-0 md:px-4">
         <h3
           className="text-lg font-bold mb-4"
-          style={{ color: colors.primary }}
+          style={{ color: colors._primary }}
         >
           Temahantering
         </h3>
@@ -31,8 +31,8 @@ export default function AdminThemes({ colors, user }) {
               key={key}
               className="flex items-center gap-4 p-2 rounded border"
               style={{
-                borderColor: colors.border,
-                background: colors.background,
+                borderColor: colors._border,
+                background: colors._background,
               }}
             >
               <div

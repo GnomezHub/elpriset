@@ -30,24 +30,24 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:opacity-80"
         style={{
-          backgroundColor: themes[currentTheme].card,
-          color: themes[currentTheme].text,
-          border: `1px solid ${themes[currentTheme].border}`,
+          backgroundColor: themes[currentTheme]._card,
+          color: themes[currentTheme]._text,
+          border: `1px solid ${themes[currentTheme]._border}`,
         }}
       >
         <div
           className="w-4 h-4 rounded-full"
           style={{
-            border: `1px solid ${themes[currentTheme].border}`,
+            border: `1px solid ${themes[currentTheme]._border}`,
             backgroundColor:
-              themes[currentTheme].name === "Dark Mode" ||
-              themes[currentTheme].name === "Calm Neutral"
-                ? themes[currentTheme].background
-                : themes[currentTheme].primary,
+              themes[currentTheme]._name === "Dark Mode" ||
+              themes[currentTheme]._name === "Calm Neutral"
+                ? themes[currentTheme]._background
+                : themes[currentTheme]._primary,
           }}
         />
         <span className="text-sm font-medium">
-          {themes[currentTheme].name}
+          {themes[currentTheme]._name}
         </span>
         <svg
           className={`w-4 h-4 transition-transform ${
@@ -75,8 +75,8 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
           <div
             className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-20"
             style={{
-              backgroundColor: themes[currentTheme].card,
-              borderColor: themes[currentTheme].border,
+              backgroundColor: themes[currentTheme]._card,
+              borderColor: themes[currentTheme]._border,
             }}
           >
             {Object.entries(themes).map(([key, theme]) => (
@@ -86,19 +86,19 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:opacity-80 transition-all first:rounded-t-lg last:rounded-b-lg ${
                   currentTheme === key ? "opacity-100" : "opacity-70"
                 }`}
-                style={{ color: themes[currentTheme].text }}
+                style={{ color: themes[currentTheme]._text }}
               >
                 <div
                   className="w-4 h-4 rounded-full"
                   style={{
                     backgroundColor:
-                      theme.name === "Dark Mode" ||
-                      theme.name === "Calm Neutral"
-                        ? theme.background
-                        : theme.primary,
+                      theme._name === "Dark Mode" ||
+                      theme._name === "Calm Neutral"
+                        ? theme._background
+                        : theme._primary,
                   }}
                 />
-                <span className="text-sm font-medium">{theme.name}</span>
+                <span className="text-sm font-medium">{theme._name}</span>
                 {currentTheme === key && (
                   <svg
                     className="w-4 h-4 ml-auto"

@@ -55,9 +55,9 @@ export default function UserAuth({ colors, user, setUser }) {
           onClick={handleSignOut}
           className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
           style={{
-            backgroundColor: colors.card,
-            color: colors.negative,
-            border: `1px solid ${colors.border}`,
+            backgroundColor: colors._card,
+            color: colors._negative,
+            border: `1px solid ${colors._border}`,
           }}
         >
           {/* {user.user_metadata.full_name.split(' ')[0]} */}
@@ -77,9 +77,9 @@ export default function UserAuth({ colors, user, setUser }) {
           style={{
             //   backgroundColor: colors.primary,
             //   color: colors.background,
-            backgroundColor: colors.card,
-            color: colors.text,
-            border: `1px solid ${colors.border}`,
+            backgroundColor: colors._card,
+            color: colors._text,
+            border: `1px solid ${colors._border}`,
           }}
         >
           Logga in

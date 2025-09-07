@@ -210,14 +210,14 @@ export default function TaskPlan({
     <div
       className="p-6 rounded-xl shadow-md border transition-all duration-300"
       style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
+        backgroundColor: colors._card,
+        borderColor: colors._border,
       }}
     >
-      <h2 className="text-xl font-bold mb-4" style={{ color: colors.primary }}>
+      <h2 className="text-xl font-bold mb-4" style={{ color: colors._primary }}>
         Planeringshjälp
       </h2>
-      <p className="mb-4" style={{ color: colors.mutedText }}>
+      <p className="mb-4" style={{ color: colors._mutedText }}>
         Baserat på priserna, här är de bästa tiderna att köra dina mest
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
@@ -225,7 +225,7 @@ export default function TaskPlan({
       <div className="flex justify-center items-center p-6">
         <table className="w-full text-left table-auto">
           <thead>
-            <tr className="border-b" style={{ borderColor: colors.border }}>
+            <tr className="border-b" style={{ borderColor: colors._border }}>
               <th
                 className="py-3 px-4 font-bold text-sm sm:text-base"
                 style={{ color: colors.text }}
