@@ -228,19 +228,19 @@ export default function TaskPlan({
             <tr className="border-b" style={{ borderColor: colors._border }}>
               <th
                 className="py-3 px-4 font-bold text-sm sm:text-base"
-                style={{ color: colors.text }}
+                style={{ color: colors._text }}
               >
                 Aktivitet
               </th>
               <th
                 className="py-3 px-4 font-bold text-sm sm:text-base"
-                style={{ color: colors.text }}
+                style={{ color: colors._text }}
               >
                 varaktighet
               </th>
               <th
                 className="py-3 text-right px-4 font-bold text-sm sm:text-base"
-                style={{ color: colors.text }}
+                style={{ color: colors._text }}
               >
                 Bästa starttid
               </th>
@@ -255,13 +255,13 @@ export default function TaskPlan({
                 <tr
                   key={task.id}
                   className="border-b transition-colors duration-200"
-                  style={{ borderColor: colors.border }}
+                  style={{ borderColor: colors._border }}
                   onMouseEnter={() => setHoveredRow(task.id)}
                   onMouseLeave={() => setHoveredRow(null)}
                 >
                   <td
                     className="p-4 font-semibold text-sm sm:text-base relative"
-                    style={{ color: colors.text }}
+                    style={{ color: colors._text }}
                   >
                     {/* Ikon och ikonväljare */}
                     <button
@@ -279,7 +279,7 @@ export default function TaskPlan({
                         style={{
                           //  left: "50%",
                           // transform: "translateX(-50%)",
-                          backgroundColor: colors.card,
+                          backgroundColor: colors._card,
                           borderColor: colors.border,
                           maxWidth: "600px",
                           minWidth: "320px",
@@ -291,8 +291,8 @@ export default function TaskPlan({
                             onClick={() => handleIconSelect(task, icon)}
                             className="text-xl p-1 rounded hover:bg-gray-200"
                             style={{
-                              backgroundColor: colors.background,
-                              color: colors.text,
+                              backgroundColor: colors._background,
+                              color: colors._text,
                               border: "none",
                               cursor: "pointer",
                             }}
@@ -329,7 +329,7 @@ export default function TaskPlan({
                   <td className="p-4 pl-6 font-semibold relative">
                     <div
                       className="flex items-center text-center space-x-2 transition-all duration-200 ease-in-out"
-                      style={{ color: colors.text }}
+                      style={{ color: colors._text }}
                     >
                       <span className="cursor-default text-center font-semibold text-sm sm:text-base">
                         {task.duration} timm{task.duration > 1 ? "ar" : "e"}
@@ -345,9 +345,9 @@ export default function TaskPlan({
                           onClick={() => handleDurationChange(task.id, 1)}
                           className="border rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-transform"
                           style={{
-                            color: colors.primary,
-                            backgroundColor: colors.card,
-                            borderColor: colors.border,
+                            color: colors._backgroundprimary,
+                            backgroundColor: colors._card,
+                            borderColor: colors._border,
                           }}
                         >
                           <svg
@@ -369,9 +369,9 @@ export default function TaskPlan({
                           onClick={() => handleDurationChange(task.id, -1)}
                           className="border rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 hover:bg-gray-200 active:scale-95 transition-transform"
                           style={{
-                            color: colors.primary,
-                            backgroundColor: colors.card,
-                            borderColor: colors.border,
+                            color: colors._primary,
+                            backgroundColor: colors._card,
+                            borderColor: colors._border,
                           }}
                         >
                           <svg
@@ -394,7 +394,7 @@ export default function TaskPlan({
                   </td>
                   <td
                     className="p-4 text-right relative"
-                    style={{ color: colors.positive }}
+                    style={{ color: colors._positive }}
                   >
                     <div
                       className={`absolute -right-5 flex flex-col transform transition-all duration-200 ${
@@ -408,9 +408,9 @@ export default function TaskPlan({
                         className="border cursor-pointer rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-transform"
                         title="Ta bort aktivitet"
                         style={{
-                          color: colors.negative,
-                          backgroundColor: colors.card,
-                          borderColor: colors.border,
+                          color: colors._negative,
+                          backgroundColor: colors._card,
+                          borderColor: colors._border,
                         }}
                       >
                         <svg
@@ -449,9 +449,9 @@ export default function TaskPlan({
           //className="px-4 py-2 rounded-lg font-semibold bg-blue-500 text-white hover:bg-blue-600 transition"
           className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:shadow-md hover:opacity-80"
           style={{
-            backgroundColor: colors.primary,
-            color: colors.card,
-            border: `1px solid ${colors.border}`,
+            backgroundColor: colors._primary,
+            color: colors._card,
+            border: `1px solid ${colors._border}`,
           }}
         >
           + Lägg till aktivitet
