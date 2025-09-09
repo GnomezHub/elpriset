@@ -5,8 +5,8 @@ import { supabase } from "../utils/supabase.js";
 // Theme Selector Component
 export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
   const [isOpen, setIsOpen] = useState(false);
-  console.log("ThemeSelector rendered user: ", user);
-  console.log("ThemeSelector currentTheme: ", currentTheme);
+//   console.log("ThemeSelector rendered user: ", user);
+//   console.log("ThemeSelector currentTheme: ", currentTheme);
 
   const handleThemeChange = async (key) => {
     onThemeChange(key);
@@ -41,7 +41,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
             border: `1px solid ${themes[currentTheme]._border}`,
             backgroundColor:
               themes[currentTheme]._name === "Dark Mode" ||
-              themes[currentTheme]._name === "Calm Neutral"
+              themes[currentTheme]._name === "Light Calm"
                 ? themes[currentTheme]._background
                 : themes[currentTheme]._primary,
           }}
@@ -93,7 +93,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
                   style={{
                     backgroundColor:
                       theme._name === "Dark Mode" ||
-                      theme._name === "Calm Neutral"
+                      theme._name === "Light Calm"
                         ? theme._background
                         : theme._primary,
                   }}

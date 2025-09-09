@@ -1,9 +1,6 @@
-import AuthTest from "./AuthTest";
 export default function Footer({ colors }) {
   return (
     <div>
-      {" "}
-      {/* <AuthTest /> */}
       <footer
         className="text-center py-8 mt-18 border-t"
         style={{ borderColor: colors._border }}

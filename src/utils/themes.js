@@ -1,7 +1,7 @@
 // Theme definitions
 export const themes = {
   calm: {
-    _name: "Calm Neutral",
+    _name: "Light Calm",
     _primary: "#2c3e50",
     _secondary: "#F28C28",
     _background: "#F8F7F4",

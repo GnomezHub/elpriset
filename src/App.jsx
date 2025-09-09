@@ -17,7 +17,6 @@ import Insights from "./components/Insights.jsx";
 import AdminPanel from "./components/AdminUsers.jsx";
 import AdminThemes from "./components/AdminThemes.jsx";
 
-
 // Main App component containing all the application logic and UI
 export default function App() {
   const [area, setArea] = useState("SE3");
@@ -31,8 +30,7 @@ export default function App() {
   const [showTomorrowInfo, setShowTomorrowInfo] = useState(false);
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
-    const [selectedUserId, setSelectedUserId] = useState(null);
-  
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -57,7 +55,14 @@ export default function App() {
   useEffect(() => {
     const fetchUserTheme = async () => {
       if (!user) {
-        setCurrentTheme("calm");
+        //setCurrentTheme("calm");
+
+        const isDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        // Set theme, e.g.:
+        setCurrentTheme(isDark ? "dark" : "calm"); // or your preferred light theme
+
         return;
       }
 
@@ -221,7 +226,7 @@ export default function App() {
 
       const now = new Date();
       const currentHour = now.getHours();
-      console.log("Current hour:", currentHour);
+      //  console.log("Current hour:", currentHour);
       const filteredData =
         day === "today" // && currentHour > 5
           ? data.filter(
@@ -641,10 +646,15 @@ export default function App() {
                 user={user}
                 tasks={tasks}
                 setTasks={setTasks}
-                selectedUserId={selectedUserId} 
+                selectedUserId={selectedUserId}
               />
               {userRole === "admin" ? (
-                <AdminPanel colors={colors} user={user} selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId} />
+                <AdminPanel
+                  colors={colors}
+                  user={user}
+                  selectedUserId={selectedUserId}
+                  setSelectedUserId={setSelectedUserId}
+                />
               ) : (
                 <Insights colors={colors} insights={insights} />
               )}
@@ -654,7 +664,7 @@ export default function App() {
                 <AdminThemes colors={colors} user={user} />
               </section>
             )}
-         
+
             <Footer colors={colors} />
           </main>
         )}

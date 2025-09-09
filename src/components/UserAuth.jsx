@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { supabase } from "../utils/supabase.js";
 /*
 
@@ -15,10 +15,9 @@ import { supabase } from "../utils/supabase.js";
 
 */
 
-
 export default function UserAuth({ colors, user, setUser }) {
   //const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
+  //const [error, setError] = useState(null);
 
   // Hämta aktuell användare vid mount
   useEffect(() => {
@@ -26,26 +25,26 @@ export default function UserAuth({ colors, user, setUser }) {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.log("getUser() - Error fetching user:", error.message);
-        setError(error.message);
+        //   setError(error.message);
       } else {
         console.log("getUser() - Current user:", data.user);
         setUser(data.user);
       }
     };
     getUser();
-  }, []);
+  }, [setUser]);
 
-  useEffect(() => {
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (data.session) {
-        console.log("getSession() - Inloggad:", data.session.user);
-      } else {
-        console.log("getSession() - Ingen session hittades. ", error);
-      }
-    };
-    getSession();
-  }, []);
+  // useEffect(() => {
+  //   const getSession = async () => {
+  //     const { data, error } = await supabase.auth.getSession();
+  //     if (data.session) {
+  //       console.log("getSession() - Inloggad:", data.session.user);
+  //     } else {
+  //       console.log("getSession() - Ingen session hittades. ", error);
+  //     }
+  //   };
+  //   getSession();
+  // }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -118,8 +117,10 @@ export default function UserAuth({ colors, user, setUser }) {
           </svg>
         </button>
       )}
-      {error && console.error(error)}
-      {/* {error && <p className="text-red-600 mt-4">{error}</p>} */}
+      {/* 
+       {error && console.error(error)}
+     {error && <p className="text-red-600 mt-4">{error}</p>} 
+     */}
     </div>
   );
 }
