@@ -1,0 +1,201 @@
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  role text NOT NULL DEFAULT 'user',
+  area text NOT NULL DEFAULT 'SE4',
+  theme text,
+  lang text,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.tasks (
+  id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name text NOT NULL,
+  duration integer,
+  icon text,
+  notify boolean DEFAULT false,
+  time timestamp with time zone,
+  active boolean DEFAULT true,
+  "userId" uuid REFERENCES public.profiles(id) ON DELETE CASCADE,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now()
+);
+
+
+CREATE POLICY "Profiles can view own" ON public.profiles
+FOR SELECT TO authenticated
+USING ((SELECT auth.uid()) = id);
+
+CREATE POLICY "Profiles can insert own" ON public.profiles
+FOR INSERT TO authenticated
+WITH CHECK ((SELECT auth.uid()) = id);
+
+CREATE POLICY "Profiles can update own" ON public.profiles
+FOR UPDATE TO authenticated
+USING ((SELECT auth.uid()) = id)
+WITH CHECK ((SELECT auth.uid()) = id);
+
+CREATE POLICY "Profiles can delete own" ON public.profiles
+FOR DELETE TO authenticated
+USING ((SELECT auth.uid()) = id);
+
+
+
+CREATE POLICY "Admins can select all profiles"
+ON public.profiles
+FOR SELECT
+TO authenticated
+USING ((SELECT role FROM public.profiles WHERE id = (SELECT auth.uid())) = 'admin');
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION public.create_profile_for_new_user()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, role, area, theme, lang)
+  VALUES (NEW.id, 'user', 'SE4', NULL, NULL);
+  RETURN NEW;
+END;
+$$;
+
+
+
+
+
+
+
+CREATE TRIGGER trg_create_profile
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.create_profile_for_new_user();
+
+
+
+
+
+
+
+
+-- Enable Row‑Level Security (if not already enabled)
+ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
+
+-- SELECT: read only own tasks
+CREATE POLICY "Users can view own tasks"
+ON public.tasks
+FOR SELECT TO authenticated
+USING ((SELECT auth.uid()) = "userId");
+
+-- INSERT: create tasks that belong to the user
+CREATE POLICY "Users can insert own tasks"
+ON public.tasks
+FOR INSERT TO authenticated
+WITH CHECK ((SELECT auth.uid()) = "userId");
+
+-- UPDATE: modify only own tasks
+CREATE POLICY "Users can update own tasks"
+ON public.tasks
+FOR UPDATE TO authenticated
+USING ((SELECT auth.uid()) = "userId")
+WITH CHECK ((SELECT auth.uid()) = "userId");
+
+-- DELETE: delete only own tasks
+CREATE POLICY "Users can delete own tasks"
+ON public.tasks
+FOR DELETE TO authenticated
+USING ((SELECT auth.uid()) = "userId");
+
+
+
+
+
+
+
+-- 1️⃣ Enable RLS (already done)
+ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
+
+-- 2️⃣ Policy for guests
+CREATE POLICY "guest can read unassigned tasks"
+  ON public.tasks
+  FOR SELECT
+  TO anon
+  USING ("userId" IS NULL);
+
+
+
+
+
+
+
+
+
+  
+CREATE POLICY "anon user can read unassigned tasks"
+  ON public.tasks
+  FOR SELECT
+  TO anon
+  USING ("userId" IS NULL);
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION public.copy_tasks_for_new_profile()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  INSERT INTO public.tasks (
+    name,
+    duration,
+    icon,
+    notif,
+    "time",
+    active,
+    "userId",
+    created_at,
+    updated_at
+  )
+  SELECT
+    name,
+    duration,
+    icon,
+    notif,
+    "time",
+    active,
+    NEW.id,
+    now(),
+    now()
+  FROM public.tasks
+  WHERE "userId" IS NULL;
+  RETURN NEW;
+END;
+$$;
+CREATE TRIGGER copy_tasks_on_profile_insert
+AFTER INSERT ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.copy_tasks_for_new_profile();
+
+
+
+
+
+
+
+INSERT INTO themes (_name, _primary, _secondary, _background, _card, _text, _mutedText, _positive, _negative, _border) VALUES
+('Calm Neutral', '#2c3e50', '#F28C28', '#F8F7F4', '#ffffff', '#2c3e50', '#6b7280', '#16a34a', '#dc2626', '#e5e7eb'),
+('Dark Mode', '#f8fafc', '#F28C28', '#0f172a', '#1e293b', '#f8fafc', '#94a3b8', '#22c55e', '#ef4444', '#334155'),
+('Ocean Blue', '#0ea5e9', '#f59e0b', '#f0f9ff', '#ffffff', '#0c4a6e', '#64748b', '#059669', '#dc2626', '#bae6fd'),
+('Forest Green', '#166534', '#ea580c', '#f0fdf4', '#ffffff', '#14532d', '#6b7280', '#16a34a', '#dc2626', '#bbf7d0'),
+('Sunset Purple', '#7c3aed', '#f59e0b', '#faf5ff', '#ffffff', '#581c87', '#6b7280', '#16a34a', '#dc2626', '#e9d5ff');

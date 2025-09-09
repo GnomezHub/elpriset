@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { themes } from "../utils/themes";
+import { themes } from "../utils/themes.js";
 import { supabase } from "../utils/supabase.js";
 
 // Theme Selector Component

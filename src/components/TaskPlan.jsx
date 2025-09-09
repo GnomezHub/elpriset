@@ -6,13 +6,13 @@ export default function TaskPlan({
   findBestTime,
   colors,
   tasks,
-  setTasks,
   user,
+  setTasks,
 }) {
   //const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [userId, setUserId] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
@@ -143,10 +143,20 @@ export default function TaskPlan({
   //  console.log("TaskPlan rendered user: ", user);
 
   useEffect(() => {
+    if (user) {
+      setUserId(user.id);
+    }else{
+      setUserId(null);
+    }
+  }, [user]);
+
+  useEffect(() => {
     const fetchTasks = async () => {
       let query = supabase.from("tasks").select("*");
       if (user) {
         query = query.eq("userId", user.id);
+      }else{
+        query = query.is("userId", null);
       }
       const { data, error } = await query.order("duration", {
         ascending: true,
@@ -156,7 +166,7 @@ export default function TaskPlan({
       setLoading(false);
     };
     fetchTasks();
-  }, [user]);
+  }, [user, setTasks, userId]);
 
   const handleTitleClick = (task) => {
     setEditingTaskId(task.id);
@@ -322,7 +332,7 @@ export default function TaskPlan({
                         title="Redigera titel"
                         className="cursor-pointer"
                       >
-                        {task.name}
+                        {task.name} [{task.id}] ({userId} == {task.userId})
                       </button>
                     )}
                   </td>
@@ -345,7 +355,7 @@ export default function TaskPlan({
                           onClick={() => handleDurationChange(task.id, 1)}
                           className="border rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-transform"
                           style={{
-                            color: colors._backgroundprimary,
+                            color: colors._primary,
                             backgroundColor: colors._card,
                             borderColor: colors._border,
                           }}

@@ -45,17 +45,21 @@ export default function AdminUsers({ colors, user }) {
           <table className="w-full text-left mb-4">
             <thead>
               <tr>
+                 <th className="py-2">bild</th>
                 <th className="py-2">Namn</th>
+                <th className="py-2">Email</th>
                 <th className="py-2">Roll</th>
                 <th className="py-2">Tema</th>
-                <th className="py-2">ELområde</th>
+                <th className="py-2">Elområde</th>
               </tr>
             </thead>
             <tbody>
               {users.map((u) => (
                 <tr key={u.id}>
+                  <td className="py-1">{u.avatar_url ? <img src={u.avatar_url} alt={u.full_name} className="w-10 h-10 rounded-full" /> : "Ingen bild"}</td>
                   <td className="py-1">{u.full_name}</td>
-                  <td className="py-1">{u.role || "user"}</td>
+                  <td className="py-1 overflow-x-clip max-w-20">{u.email}</td>
+                  <td className="pl-2 py-1">{u.role || "user"}</td>
                   <td className="py-1">{u.theme || "-"}</td>
                   <td className="py-1">{u.area || "-"}</td>
                 </tr>

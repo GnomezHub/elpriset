@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import Chart from "chart.js/auto";
 import TaskPlan from "./components/TaskPlan";
-import { themes } from "./utils/themes";
+import { themes } from "./utils/themes.js";
 import ThemeSelector from "./components/ThemeSelector";
 import UserAuth from "./components/UserAuth";
 import { supabase } from "./utils/supabase.js";
@@ -53,7 +53,10 @@ export default function App() {
   // Fetch and apply user's theme preference on user change
   useEffect(() => {
     const fetchUserTheme = async () => {
-      if (!user) return;
+      if (!user) {
+        setCurrentTheme("calm");
+        return;
+      }
 
       const { data, error } = await supabase
         .from("profiles")
