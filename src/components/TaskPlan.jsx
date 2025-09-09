@@ -8,6 +8,7 @@ export default function TaskPlan({
   tasks,
   user,
   setTasks,
+  selectedUserId,
 }) {
   //const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -145,7 +146,7 @@ export default function TaskPlan({
   useEffect(() => {
     if (user) {
       setUserId(user.id);
-    }else{
+    } else {
       setUserId(null);
     }
   }, [user]);
@@ -154,8 +155,12 @@ export default function TaskPlan({
     const fetchTasks = async () => {
       let query = supabase.from("tasks").select("*");
       if (user) {
-        query = query.eq("userId", user.id);
-      }else{
+        if (selectedUserId) {
+          query = query.eq("userId", selectedUserId);
+        } else {
+          query = query.eq("userId", user.id);
+        }
+      } else {
         query = query.is("userId", null);
       }
       const { data, error } = await query.order("duration", {
@@ -166,7 +171,7 @@ export default function TaskPlan({
       setLoading(false);
     };
     fetchTasks();
-  }, [user, setTasks, userId]);
+  }, [user, setTasks, userId, selectedUserId]);
 
   const handleTitleClick = (task) => {
     setEditingTaskId(task.id);
@@ -332,7 +337,8 @@ export default function TaskPlan({
                         title="Redigera titel"
                         className="cursor-pointer"
                       >
-                        {task.name} [{task.id}] ({userId} == {task.userId})
+                        {task.name}
+                        {/* [{task.id}] ({userId} == {task.userId}) */}
                       </button>
                     )}
                   </td>

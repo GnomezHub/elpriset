@@ -17,6 +17,7 @@ import Insights from "./components/Insights.jsx";
 import AdminPanel from "./components/AdminUsers.jsx";
 import AdminThemes from "./components/AdminThemes.jsx";
 
+
 // Main App component containing all the application logic and UI
 export default function App() {
   const [area, setArea] = useState("SE3");
@@ -30,7 +31,9 @@ export default function App() {
   const [showTomorrowInfo, setShowTomorrowInfo] = useState(false);
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  //  const [selectedUserId, setSelectedUserId] = useState(null);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+  
+
   useEffect(() => {
     const fetchRole = async () => {
       if (!user) {
@@ -638,9 +641,10 @@ export default function App() {
                 user={user}
                 tasks={tasks}
                 setTasks={setTasks}
+                selectedUserId={selectedUserId} 
               />
               {userRole === "admin" ? (
-                <AdminPanel colors={colors} user={user} />
+                <AdminPanel colors={colors} user={user} selectedUserId={selectedUserId} setSelectedUserId={setSelectedUserId} />
               ) : (
                 <Insights colors={colors} insights={insights} />
               )}
