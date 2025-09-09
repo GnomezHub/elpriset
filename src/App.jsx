@@ -650,6 +650,7 @@ export default function App() {
                 <AdminThemes colors={colors} user={user} />
               </section>
             )}
+         
             <Footer colors={colors} />
           </main>
         )}
