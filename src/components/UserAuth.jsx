@@ -80,7 +80,7 @@ export default function UserAuth({ colors, user, setUser }) {
             alt="Profilbild"
             className="w-8 h-8 rounded-full"
           />
-          <span className="text-sm font-medium hidden sm:inline">Logga ut</span>
+          <span className="text-sm font-medium">Logga ut</span>
         </button>
       ) : (
         <button
