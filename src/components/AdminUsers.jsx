@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase.js";
 
-export default function AdminUsers({ colors, user, selectedUserId, setSelectedUserId }) {
+export default function AdminUsers({
+  colors,
+  user,
+  selectedUserId,
+  setSelectedUserId,
+}) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   // Hämta alla användare (exempel)
@@ -46,10 +51,10 @@ export default function AdminUsers({ colors, user, selectedUserId, setSelectedUs
               <tr>
                 <th className="py-2">bild</th>
                 <th className="py-2">Namn</th>
-                <th className="py-2">Email</th>
-                <th className="py-2">Roll</th>
                 <th className="py-2">Tema</th>
+                <th className="py-2">Roll</th>
                 <th className="py-2">Elområde</th>
+                <th className="py-2">Email</th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +72,7 @@ export default function AdminUsers({ colors, user, selectedUserId, setSelectedUs
                         : undefined,
                   }}
                   className={
-                    "transition-all duration-150 " +
+                    "transition-all duration-150  " +
                     (selectedUserId === u.id ? "font-bold" : "")
                   }
                 >
@@ -82,11 +87,12 @@ export default function AdminUsers({ colors, user, selectedUserId, setSelectedUs
                       "Ingen bild"
                     )}
                   </td>
-                  <td className="py-1">{u.full_name}</td>
-                  <td className="py-1 overflow-x-clip max-w-20">{u.email}</td>
-                  <td className="pl-2 py-1">{u.role || "user"}</td>
+                  <td className="py-1  overflow-x-clip max-w-20">{u.full_name}</td>
                   <td className="py-1">{u.theme || "-"}</td>
+                  <td className="pl-2 py-1">{u.role || "user"}</td>
+
                   <td className="py-1">{u.area || "-"}</td>
+                  <td className="py-1 overflow-x-clip max-w-20">{u.email}</td>
                 </tr>
               ))}
             </tbody>

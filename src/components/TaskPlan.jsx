@@ -229,7 +229,7 @@ export default function TaskPlan({
 
   return (
     <div
-      className="p-6 rounded-xl shadow-md border transition-all duration-300"
+      className="p-4 sm:p-6 rounded-xl shadow-md border transition-all duration-300"
       style={{
         backgroundColor: colors._card,
         borderColor: colors._border,
@@ -243,8 +243,8 @@ export default function TaskPlan({
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
       </p>
-      <div className="flex justify-center items-center p-2">
-        <table className="w-full text-left px-4">
+      <div className="w-full">
+        <table className="w-full text-left table-auto block sm:table">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
               <th
@@ -252,7 +252,7 @@ export default function TaskPlan({
                 style={{ color: colors._text }}
               ></th>
               <th
-                className="py-3 px-4 font-bold text-sm sm:text-base"
+                className="py-3 font-bold text-sm sm:text-base"
                 style={{ color: colors._text }}
               >
                 Aktivitet
@@ -285,7 +285,7 @@ export default function TaskPlan({
                   onMouseLeave={() => setHoveredRow(null)}
                 >
                   <td
-                    className="font-semibold text-sm sm:text-base relative"
+                    className=" font-semibold text-sm sm:text-base relative"
                     style={{ color: colors._text }}
                   >
                     {/* Ikon och ikonväljare */}
@@ -424,7 +424,7 @@ export default function TaskPlan({
                     </div>
                   </td>
                   <td
-                    className="p-4 text-right relative"
+                    className="p-4 text-right relative "
                     style={{ color: colors._positive }}
                   >
                     <div
