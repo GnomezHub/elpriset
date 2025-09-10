@@ -431,7 +431,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen py-8 transition-all duration-300"
+      className="min-h-screen min-w-95  py-8 transition-all duration-300"
       style={{ backgroundColor: colors._background, color: colors._text }}
     >
       <style>{`

@@ -229,7 +229,7 @@ export default function TaskPlan({
 
   return (
     <div
-      className=" sm:p-6 rounded-xl shadow-md transition-all duration-300"
+      className="sm:p-6 rounded-xl shadow-md transition-all duration-300"
       style={{
         backgroundColor: colors._card,
         borderColor: colors._border,
@@ -243,9 +243,7 @@ export default function TaskPlan({
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
       </p>
-      <div
-      //  className="overflow-x-auto overflow-y-visible"
-      >
+      <div className="overflow-y-visible block">
         <table className="w-full text-left table-auto block sm:table">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
