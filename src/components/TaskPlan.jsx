@@ -229,7 +229,7 @@ export default function TaskPlan({
 
   return (
     <div
-      className="p-4 sm:p-6 rounded-xl shadow-md border transition-all duration-300"
+      className=" sm:p-6 rounded-xl shadow-md transition-all duration-300"
       style={{
         backgroundColor: colors._card,
         borderColor: colors._border,
@@ -243,7 +243,7 @@ export default function TaskPlan({
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
       </p>
-      <div className="w-full">
+      <div className="overflow-x-auto">
         <table className="w-full text-left table-auto block sm:table">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
@@ -280,18 +280,26 @@ export default function TaskPlan({
                 <tr
                   key={task.id}
                   className="border-b transition-colors duration-200"
-                  style={{ borderColor: colors._border }}
+                  style={{
+                    borderColor: colors._border,
+
+                    backgroundColor: isHovered ? colors._secondary + "22" : "",
+                    // border:
+                    //   isHovered
+                    //     ? `2px solid ${colors._secondary}`
+                    //     : undefined,
+                  }}
                   onMouseEnter={() => setHoveredRow(task.id)}
                   onMouseLeave={() => setHoveredRow(null)}
                 >
                   <td
-                    className=" font-semibold text-sm sm:text-base relative"
+                    className=" pl-2 font-semibold text-sm sm:text-base relative"
                     style={{ color: colors._text }}
                   >
                     {/* Ikon och ikonväljare */}
                     <button
                       onClick={() => handleIconClick(task)}
-                      className="mr-2"
+                      className="mr-2 cursor-pointer"
                       style={{ fontSize: "1.5rem" }}
                       title="Välj ikon"
                     >
@@ -348,25 +356,29 @@ export default function TaskPlan({
                       />
                     ) : (
                       <button
-                        onClick={() => handleTitleClick(task)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTitleClick(task);
+                        }}
                         title="Redigera titel"
                         className="cursor-pointer"
+                        style={{ pointerEvents: "auto" }}
                       >
                         {task.name}
                         {/* [{task.id}] ({userId} == {task.userId}) */}
                       </button>
                     )}
                   </td>
-                  <td className="p-4 pl-6 font-semibold relative">
+                  <td className="p-4 font-semibold relative">
                     <div
                       className="flex items-center text-center space-x-2 transition-all duration-200 ease-in-out"
                       style={{ color: colors._text }}
                     >
-                      <span className="cursor-default text-center font-semibold text-sm sm:text-base">
-                        {task.duration} timm{task.duration > 1 ? "ar" : "e"}
+                      <span className="pl-4 cursor-default text-center font-semibold text-sm sm:text-base">
+                        {task.duration} tim
                       </span>
                       <div
-                        className={`absolute left-26 flex flex-col space-y-1 transform transition-all duration-200 ${
+                        className={`absolute right-4 flex flex-col space-y-1 transform transition-all duration-200 ${
                           isHovered
                             ? "translate-x-0 opacity-100"
                             : "translate-x-12 opacity-0"
@@ -374,7 +386,7 @@ export default function TaskPlan({
                       >
                         <button
                           onClick={() => handleDurationChange(task.id, 1)}
-                          className="border rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-transform"
+                          className="border cursor-pointer rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 active:scale-95 transition-transform"
                           style={{
                             color: colors._primary,
                             backgroundColor: colors._card,
@@ -398,7 +410,7 @@ export default function TaskPlan({
                         </button>
                         <button
                           onClick={() => handleDurationChange(task.id, -1)}
-                          className="border rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 hover:bg-gray-200 active:scale-95 transition-transform"
+                          className="border cursor-pointer rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg transform hover:scale-110 hover:bg-gray-200 active:scale-95 transition-transform"
                           style={{
                             color: colors._primary,
                             backgroundColor: colors._card,
@@ -424,15 +436,16 @@ export default function TaskPlan({
                     </div>
                   </td>
                   <td
-                    className="p-4 text-right relative "
+                    className="p-4 text-center relative"
                     style={{ color: colors._positive }}
                   >
                     <div
-                      className={`absolute -right-5 flex flex-col transform transition-all duration-200 ${
+                      className={`absolute right-1 top-1 flex flex-col transform transition-all duration-200 ${
                         isHovered
                           ? "translate-x-0 opacity-100"
                           : "-translate-x-12 opacity-0"
                       }`}
+                      style={{ pointerEvents: "none" }}
                     >
                       <button
                         onClick={() => handleRemoveTask(task.id)}
@@ -442,6 +455,7 @@ export default function TaskPlan({
                           color: colors._negative,
                           backgroundColor: colors._card,
                           borderColor: colors._border,
+                          pointerEvents: "auto",
                         }}
                       >
                         <svg
@@ -462,7 +476,7 @@ export default function TaskPlan({
                         </svg>
                       </button>
                     </div>
-                    <span className=" font-bold text-sm sm:text-base">
+                    <span className="pr-2 font-bold text-sm sm:text-base text-center">
                       {bestTime.hour === -1
                         ? "N/A"
                         : `${String(bestTime.hour).padStart(2, "0")}:00`}
