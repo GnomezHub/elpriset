@@ -243,7 +243,9 @@ export default function TaskPlan({
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
       </p>
-      <div className="overflow-x-auto">
+      <div
+      //  className="overflow-x-auto overflow-y-visible"
+      >
         <table className="w-full text-left table-auto block sm:table">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
@@ -283,7 +285,7 @@ export default function TaskPlan({
                   style={{
                     borderColor: colors._border,
 
-                    backgroundColor: isHovered ? colors._secondary + "22" : "",
+                    backgroundColor: isHovered ? colors._background : "",
                     // border:
                     //   isHovered
                     //     ? `2px solid ${colors._secondary}`
@@ -305,15 +307,10 @@ export default function TaskPlan({
                     >
                       {task.icon}
                     </button>
-                  </td>
-                  <td
-                    className="p-4 font-semibold text-sm sm:text-base relative"
-                    style={{ color: colors._text }}
-                  >
                     {iconPickerTaskId === task.id && (
                       <div
                         ref={iconPickerRef}
-                        className="absolute z-20 top-8 bg-white rounded-xl shadow-lg border p-2 flex flex-wrap gap-2"
+                        className="absolute z-20 top-8 rounded-xl shadow-lg border p-2 flex flex-wrap gap-2"
                         style={{
                           //  left: "50%",
                           // transform: "translateX(-50%)",
@@ -327,7 +324,7 @@ export default function TaskPlan({
                           <button
                             key={icon}
                             onClick={() => handleIconSelect(task, icon)}
-                            className="text-xl p-1 rounded hover:bg-gray-200"
+                            className="text-xl p-1 rounded"
                             style={{
                               backgroundColor: colors._background,
                               color: colors._text,
@@ -340,6 +337,11 @@ export default function TaskPlan({
                         ))}
                       </div>
                     )}
+                  </td>
+                  <td
+                    className="p-4 font-semibold text-sm sm:text-base relative"
+                    style={{ color: colors._text }}
+                  >
                     {/* Titel */}
                     {editingTaskId === task.id ? (
                       <input
