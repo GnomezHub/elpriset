@@ -69,6 +69,7 @@ export default function TaskPlan({
     "🪮",
     "🪯",
     "🪰",
+    "❤️",
   ];
 
   const [iconPickerTaskId, setIconPickerTaskId] = useState(null);
@@ -246,16 +247,21 @@ export default function TaskPlan({
           Baserat på priserna, här är de bästa tiderna att köra dina mest
           energikrävande apparater. Du kan lägga till, redigera och ta bort
           uppgifter i din plan, men det sparas bara lokalt tills du loggar in.
+          Starttiden för varje aktivitet beräknas utifrån aktivitetens
+          varaktighet och de förväntade elpriserna.
         </p>
       )}
       {user && (
         <>
           <div className="mb-2" style={{ color: colors._secondary }}>
-            Hej <b>{user.user_metadata.full_name || user.email || "användare"}</b>!
+            Hej{" "}
+            <b>{user.user_metadata.full_name || user.email || "användare"}</b>!
           </div>
-          <p className="mb-4" style={{ color: colors._text}}>
-            Här kan du planera dina aktiviteter baserat på elpriserna.
-            Lägg till, redigera och ta bort uppgifter i din personliga plan.
+          <p className="mb-4" style={{ color: colors._text }}>
+            Här kan du planera dina aktiviteter baserat på elpriserna. Lägg
+            till, redigera och ta bort aktiviteter i din personliga plan.
+            Starttiden för varje aktivitet beräknas utifrån aktivitetens
+            varaktighet och de förväntade elpriserna.
           </p>
         </>
       )}
