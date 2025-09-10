@@ -31,6 +31,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserName, setSelectedUserName] = useState(null);
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -647,6 +648,8 @@ export default function App() {
                 tasks={tasks}
                 setTasks={setTasks}
                 selectedUserId={selectedUserId}
+                setSelectedUserId={setSelectedUserId}
+                selectedUserName={selectedUserName}
               />
               {userRole === "admin" ? (
                 <AdminPanel
@@ -654,6 +657,8 @@ export default function App() {
                   user={user}
                   selectedUserId={selectedUserId}
                   setSelectedUserId={setSelectedUserId}
+                  selectedUserName={selectedUserName}
+                  setSelectedUserName={setSelectedUserName}
                 />
               ) : (
                 <Insights colors={colors} insights={insights} />

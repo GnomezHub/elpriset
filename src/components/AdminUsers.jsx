@@ -6,9 +6,12 @@ export default function AdminUsers({
   user,
   selectedUserId,
   setSelectedUserId,
+  selectedUserName,
+  setSelectedUserName,
 }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [roleMsg, setRoleMsg] = useState("");
   // Hämta alla användare (exempel)
   useEffect(() => {
     const fetchUsers = async () => {
@@ -19,6 +22,27 @@ export default function AdminUsers({
     };
     fetchUsers();
   }, []);
+
+  // Funktion för att uppdatera roll i databasen
+  const handleRoleChange = async (userId, newRole) => {
+    setRoleMsg("");
+    // Optimistisk UI-uppdatering
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+    );
+    // Uppdatera i databasen
+    const { error } = await supabase
+      .from("profiles")
+      .update({ role: newRole })
+      .eq("id", userId);
+    if (error) {
+      setRoleMsg("Fel vid uppdatering av roll: " + error.message);
+    } else {
+      setRoleMsg("Roll uppdaterad!");
+    }
+    // Timeout för att ta bort meddelandet
+    setTimeout(() => setRoleMsg(""), 2500);
+  };
 
   if (!user) return <div>Du måste vara inloggad som admin.</div>;
 
@@ -61,7 +85,10 @@ export default function AdminUsers({
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  onClick={() => setSelectedUserId(u.id)}
+                  onClick={() => {
+                    setSelectedUserId(u.id);
+                    setSelectedUserName(u.full_name || u.email || "");
+                  }}
                   style={{
                     cursor: "pointer",
                     backgroundColor:
@@ -87,9 +114,20 @@ export default function AdminUsers({
                       "Ingen bild"
                     )}
                   </td>
-                  <td className="py-1  overflow-x-clip max-w-20">{u.full_name}</td>
+                  <td className="py-1  overflow-x-clip max-w-20">
+                    {u.full_name}
+                  </td>
                   <td className="py-1">{u.theme || "-"}</td>
-                  <td className="pl-2 py-1">{u.role || "user"}</td>
+                  <td className="pl-2 py-1">
+                    <select
+                      value={u.role || "user"}
+                      onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                      className="border rounded px-1 py-0.5"
+                    >
+                      <option value="user">user</option>
+                      <option value="admin">admin</option>
+                    </select>
+                  </td>
 
                   <td className="py-1">{u.area || "-"}</td>
                   <td className="py-1 overflow-x-clip max-w-20">{u.email}</td>
@@ -104,10 +142,21 @@ export default function AdminUsers({
             style={{ borderColor: colors._secondary, color: colors._primary }}
           >
             Vald användare:{" "}
-            <b>{users.find((u) => u.id === selectedUserId)?.full_name || ""}</b>
+            <b>{selectedUserName}</b>
+            {roleMsg && (
+              <div
+                className="mt-2 text-sm"
+                style={{
+                  color: roleMsg.startsWith("Fel")
+                    ? "#e53e3e"
+                    : colors._secondary,
+                }}
+              >
+                {roleMsg}
+              </div>
+            )}
           </div>
         )}
-        {/* Lägg till fler adminfunktioner här */}
       </div>
     </div>
   );

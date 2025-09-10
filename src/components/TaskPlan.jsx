@@ -9,6 +9,8 @@ export default function TaskPlan({
   user,
   setTasks,
   selectedUserId,
+  setSelectedUserId,
+  selectedUserName,
 }) {
   //const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -229,7 +231,7 @@ export default function TaskPlan({
 
   return (
     <div
-      className="sm:p-6 rounded-xl shadow-md transition-all duration-300"
+      className="sm:p-6 rounded-xl shadow-md w-full transition-all duration-300"
       style={{
         backgroundColor: colors._card,
         borderColor: colors._border,
@@ -238,13 +240,55 @@ export default function TaskPlan({
       <h2 className="text-xl font-bold mb-4" style={{ color: colors._primary }}>
         Planeringshjälp
       </h2>
-      <p className="mb-4" style={{ color: colors._mutedText }}>
-        Baserat på priserna, här är de bästa tiderna att köra dina mest
-        energikrävande apparater. Du kan lägga till, redigera och ta bort
-        uppgifter i din plan, det sparas om du är inloggad.
-      </p>
-      <div className="overflow-y-visible block">
-        <table className="w-full text-left table-auto block sm:table">
+      {/* Text beroende på inloggning */}
+      {!user && (
+        <p className="mb-4" style={{ color: colors._mutedText }}>
+          Baserat på priserna, här är de bästa tiderna att köra dina mest
+          energikrävande apparater. Du kan lägga till, redigera och ta bort
+          uppgifter i din plan, men det sparas bara lokalt tills du loggar in.
+        </p>
+      )}
+      {user && (
+        <>
+          <div className="mb-2" style={{ color: colors._secondary }}>
+            Hej <b>{user.user_metadata.full_name || user.email || "användare"}</b>!
+          </div>
+          <p className="mb-4" style={{ color: colors._text}}>
+            Här kan du planera dina aktiviteter baserat på elpriserna.
+            Lägg till, redigera och ta bort uppgifter i din personliga plan.
+          </p>
+        </>
+      )}
+      {/* Varning om man tittar på någon annans planering */}
+      {selectedUserId && user && selectedUserId !== user.id && (
+        <div
+          className="mb-4 p-2 rounded border text-center font-semibold"
+          style={{
+            borderColor: colors._secondary,
+            color: colors._negative,
+            background: colors._background,
+          }}
+        >
+          Detta är {selectedUserName}s planering.
+          <br />
+          <button
+            className="underline text-sm mt-1 hover:text-blue-700"
+            style={{
+              color: colors._secondary,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              setSelectedUserId(null);
+            }}
+          >
+            gå tillbaks till din planering
+          </button>
+        </div>
+      )}
+      <div className="overflow-y-visible w-full">
+        <table className="w-full text-left table-auto sm:table">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
               <th
