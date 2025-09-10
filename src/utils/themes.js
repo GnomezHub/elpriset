@@ -24,6 +24,30 @@ export const themes = {
     _negative: "#f43f5e", // bright red
     _border: "#334155",
   },
+    neonNight: {
+    _name: "Neon Night",
+    _primary: "#a21caf",
+    _secondary: "#f59e42",
+    _background: "#18181b",
+    _card: "#27272a",
+    _text: "#f472b6",
+    _mutedText: "#818cf8",
+    _positive: "#22d3ee", // cyan
+    _negative: "#e11d48", // red
+    _border: "#a21caf",
+  },
+    cyberpunk: {
+    _name: "Cyberpunk",
+    _primary: "#fbbf24",
+    _secondary: "#38bdf8",
+    _background: "#18181b",
+    _card: "#23272f",
+    _text: "#f472b6",
+    _mutedText: "#818cf8",
+    _positive: "#38bdf8", // blue
+    _negative: "#e11d48", // vivid red
+    _border: "#fbbf24",
+  },
   ocean: {
     _name: "Ocean Blue",
     _primary: "#0ea5e9",
@@ -108,28 +132,6 @@ export const themes = {
     _negative: "#d946ef", // fuschia
     _border: "#fde68a",
   },
-  neonNight: {
-    _name: "Neon Night",
-    _primary: "#a21caf",
-    _secondary: "#f59e42",
-    _background: "#18181b",
-    _card: "#27272a",
-    _text: "#f472b6",
-    _mutedText: "#818cf8",
-    _positive: "#22d3ee", // cyan
-    _negative: "#e11d48", // red
-    _border: "#a21caf",
-  },
-  cyberpunk: {
-    _name: "Cyberpunk",
-    _primary: "#fbbf24",
-    _secondary: "#38bdf8",
-    _background: "#18181b",
-    _card: "#23272f",
-    _text: "#f472b6",
-    _mutedText: "#818cf8",
-    _positive: "#38bdf8", // blue
-    _negative: "#e11d48", // vivid red
-    _border: "#fbbf24",
-  },
+
+
 };
