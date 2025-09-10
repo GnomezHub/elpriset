@@ -1,19 +1,6 @@
 import { useEffect } from "react";
 import { supabase } from "../utils/supabase.js";
-/*
 
-  INSERT INTO public.profiles (id, email, avatar_url)
-  VALUES (
-    NEW.id,
-    NEW.email,
-    NEW.raw_user_meta_data ->> 'avatar_url'
-  )
-  ON CONFLICT (id) DO UPDATE
-    SET email = EXCLUDED.email,
-        avatar_url = EXCLUDED.avatar_url;
-  RETURN NEW;
-
-*/
 
 export default function UserAuth({ colors, user, setUser }) {
   //const [user, setUser] = useState(null);

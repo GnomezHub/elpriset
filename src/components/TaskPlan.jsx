@@ -101,11 +101,13 @@ export default function TaskPlan({
     if (user) {
       const task = tasks.find((t) => t.id === taskId);
       const newDuration = Math.max(1, task.duration + change);
+      const userIdToUpdate = selectedUserId ? selectedUserId : user.id;
+
       await supabase
         .from("tasks")
         .update({ duration: newDuration })
         .eq("id", taskId)
-        .eq("userId", user.id);
+        .eq("userId", userIdToUpdate);
     }
   };
 
@@ -113,20 +115,22 @@ export default function TaskPlan({
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
     /* */
     if (user) {
+      const userIdToDelete = selectedUserId ? selectedUserId : user.id;
       await supabase
         .from("tasks")
         .delete()
         .eq("id", taskId)
-        .eq("userId", user.id);
+        .eq("userId", userIdToDelete);
     }
   };
 
   const handleAddTask = async () => {
+    const userIdToAdd = selectedUserId ? selectedUserId : user ? user.id : null;
     const newTask = {
       name: "Ny aktivitet",
       duration: 1,
       icon: "⚡️",
-      userId: user ? user.id : null,
+      userId: userIdToAdd,
     };
     if (user) {
       const { data, error } = await supabase
@@ -191,11 +195,12 @@ export default function TaskPlan({
         )
       );
       if (user) {
+        const userIdToUpdate = selectedUserId ? selectedUserId : user.id;
         await supabase
           .from("tasks")
           .update({ name: editingTitle })
           .eq("id", task.id)
-          .eq("userId", user.id);
+          .eq("userId", userIdToUpdate);
       }
     }
   };
@@ -210,11 +215,12 @@ export default function TaskPlan({
       prevTasks.map((t) => (t.id === task.id ? { ...t, icon } : t))
     );
     if (user) {
+      const userIdToUpdate = selectedUserId ? selectedUserId : user.id;
       await supabase
         .from("tasks")
         .update({ icon })
         .eq("id", task.id)
-        .eq("userId", user.id);
+        .eq("userId", userIdToUpdate);
     }
   };
 
@@ -237,10 +243,14 @@ export default function TaskPlan({
         energikrävande apparater. Du kan lägga till, redigera och ta bort
         uppgifter i din plan, det sparas om du är inloggad.
       </p>
-      <div className="flex justify-center items-center p-6">
-        <table className="w-full text-left table-auto">
+      <div className="flex justify-center items-center p-2">
+        <table className="w-full text-left px-4">
           <thead>
             <tr className="border-b" style={{ borderColor: colors._border }}>
+              <th
+                className="font-bold text-sm sm:text-base"
+                style={{ color: colors._text }}
+              ></th>
               <th
                 className="py-3 px-4 font-bold text-sm sm:text-base"
                 style={{ color: colors._text }}
@@ -275,7 +285,7 @@ export default function TaskPlan({
                   onMouseLeave={() => setHoveredRow(null)}
                 >
                   <td
-                    className="p-4 font-semibold text-sm sm:text-base relative"
+                    className="font-semibold text-sm sm:text-base relative"
                     style={{ color: colors._text }}
                   >
                     {/* Ikon och ikonväljare */}
@@ -287,6 +297,11 @@ export default function TaskPlan({
                     >
                       {task.icon}
                     </button>
+                  </td>
+                  <td
+                    className="p-4 font-semibold text-sm sm:text-base relative"
+                    style={{ color: colors._text }}
+                  >
                     {iconPickerTaskId === task.id && (
                       <div
                         ref={iconPickerRef}

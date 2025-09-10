@@ -31,7 +31,7 @@ export default function AdminUsers({ colors, user, selectedUserId, setSelectedUs
       >
         Admin panel
       </h2>
-      <div className="h-100 w-full p-4 px-0 md:px-4">
+      <div className="h-full w-full p-4 px-0 md:px-4">
         <h3
           className="text-lg font-bold mb-4"
           style={{ color: colors._primary }}
