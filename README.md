@@ -10,13 +10,20 @@ Inloggning ger möjlighet till att lagra sina "sysslor" och varaktighet. Exempel
 Från mobilen ska det vara enkelt och tydligt, från större skärm en mer omfattande dashboard vy.
 
 ## 🛠 Teknologier
+I utkastet av readme-filen som jag bad AI ta fram så fanns VITE och ESLINT med som teknologier, men jag tar inte med dom av samma anledning som jag inte tar med VS code som teknologi hehe.
 
-- ⚛️ **React** – UI-bibliotek för dynamisk rendering
-- ⚡ **Vite** – Blixtsnabb utvecklingsmiljö
-- 🧹 **ESLint** – Kodkvalitet och formattering
+- ⚛️ **React** – UI-bibliotek för dynamisk rendering.
+  Det är lätt att komma igång och ett praktiskt sätt att bygga frontend. Men där finns ett djup av kunskap som har tar tid att bemästra.
+  
 - 🎨 **Tailwind** – Styling
+  Väldigt praktiskt css metod som bygger på hjälpklasser
+  
 - 💡 **Web API** - Hämtning av elpriser
-- 🧰 **Supabase** För inloggning och databaser
+  
+- 🧰 **Supabase** - För inloggning och databaser med funktioner
+  PostgreSQL och Procedural Language
+
+Jag valde vanlig javascript och react för detta projekt för att bli ännu bättre på reakt & PostgreSQL och lära mig Procedural Language. Om tidsbudgeten var större så skulle jag ha valt Next.js, GraphQL och typescript, men jag skulle behövt mer tid för att lära mig det tillräckligt bra för slutprojektet. Serverside logiken hamnar då istället på supabase i Procedural Language, med sina funktioner, triggers och stored procedures.
 
 GANNT schema för återstående tid
 <img width="1768" height="319" alt="Skärmbild 2025-08-29 155851" src="https://github.com/user-attachments/assets/e5c80584-baba-4715-8dca-7bbf6051a252" />
