@@ -4,7 +4,11 @@
 
 Jag vill helst göra något som jag vill använda själv, och kom fram till en webb app där man ska kunna se elpriset för dagen timme för timme och på så sätt planera sin förbrukning. Min sambo kan se spotpriset genom sin app och sin inloggning då hon står på elavtalet. Men då timpriserna är dom samma för alla i ett el-område fick jag idén om att ha en enkel app på en enkel adress (https://elpriset.netlify.app), så att man snabbt kan se när det är som billigast och när det är som dyrast, så att man kan undvika att förbruka el just då.
 Hämtar in aktuella priser timme för timme för dagen genom något lämpligt api (Nordpool?). Tänker att man kan lägga till saker som "tvätta", "dammsuga", "diskmaskin" och ställa in hur lång tid varje sak tar. Då kan appen säga när på dygnet det passar och jämföra det med morgondagen. Initialt tänker jag begränsa det till Sverige så jag tänker att man väljer sitt elområde på en karta eller dropdown.
-
+<br />
+<img width="1534" height="776" alt="Skärmbild 2025-09-11 120241" src="https://github.com/user-attachments/assets/28c69ed5-f0fe-4f43-97de-7c4b220ba535" />
+<i> Graf med priser som visar både den lägsta och de högsta timmarna. En av aktiviteterna har varaktigheten 3, därför visas 3 staplar </i>
+<br />
+<br />
 Inloggning ger möjlighet till att lagra sina "sysslor" och varaktighet. Exempelvis hur lång tid ungefär man dammsuger, hur långa tvättprogram man har, diskmaskinens tid, bil med mera. Så att man kan stänga ner sidan och ändå få fram vad man har planerat.
 
 Fördelen av att ställa in sysslor är att man får hjälp att veta när man ska börja. Är det något som bara tar en timme är det lätt att hitta vägledning på andra sidor, de brukar ha en graf som visar timmen med lägst spotpris. Men är det en aktivitet som tar flera timmar behöver man ta hänsyn till timmarna innan och efter den lägsta och min app gör denna beräkning och tar fram den bästa startiden för hela tidsspannet. Har man fler aktiviteter kan starttiden bli någon helt annat för dessa.
