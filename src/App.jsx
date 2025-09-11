@@ -19,7 +19,10 @@ import AdminThemes from "./components/AdminThemes.jsx";
 
 // Main App component containing all the application logic and UI
 export default function App() {
-  const [area, setArea] = useState("SE3");
+  const [area, setArea] = useState(() => {
+    const savedArea = localStorage.getItem("area");
+    return savedArea || "SE3";
+  });
   const [day, setDay] = useState("today");
   const [currentTheme, setCurrentTheme] = useState("calm");
   const [priceData, setPriceData] = useState([]);
@@ -57,13 +60,16 @@ export default function App() {
     const fetchUserTheme = async () => {
       if (!user) {
         //setCurrentTheme("calm");
-
-        const isDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        // Set theme, e.g.:
-        setCurrentTheme(isDark ? "dark" : "calm"); // or your preferred light theme
-
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme && themes[savedTheme]) {
+          setCurrentTheme(savedTheme);
+        } else {
+          const isDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          // Set theme
+          setCurrentTheme(isDark ? "dark" : "calm");
+        }
         return;
       }
 
@@ -105,17 +111,29 @@ export default function App() {
 
     fetchArea();
   }, [user]);
+
+  // Ladda area från localStorage om användaren loggar ut
+  useEffect(() => {
+    if (!user) {
+      const savedArea = localStorage.getItem("area");
+      if (savedArea) setArea(savedArea);
+    }
+  }, [user]);
   const handleAreaChange = async (e) => {
     const selectedArea = e.target.value;
     setArea(selectedArea); // Uppdatera UI direkt
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ area: selectedArea })
-      .eq("id", user.id);
+    if (user) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ area: selectedArea })
+        .eq("id", user.id);
 
-    if (error) {
-      console.error("Kunde inte uppdatera area:", error.message);
+      if (error) {
+        console.error("Kunde inte uppdatera area:", error.message);
+      }
+    } else {
+      localStorage.setItem("area", selectedArea);
     }
   };
 

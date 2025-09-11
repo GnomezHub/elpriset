@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { themes } from "../utils/themes.js";
 import { supabase } from "../utils/supabase.js";
 
 // Theme Selector Component
 export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
   const [isOpen, setIsOpen] = useState(false);
-//   console.log("ThemeSelector rendered user: ", user);
-//   console.log("ThemeSelector currentTheme: ", currentTheme);
+
+  // Ladda tema från localStorage om user inte är inloggad
+  useEffect(() => {
+    if (!user) {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme && themes[savedTheme]) {
+        onThemeChange(savedTheme);
+      }
+    } 
+  }, [user, onThemeChange]);
 
   const handleThemeChange = async (key) => {
     onThemeChange(key);
@@ -21,6 +29,8 @@ export default function ThemeSelector({ currentTheme, onThemeChange, user }) {
       if (error) {
         console.error("Kunde inte spara tema:", error.message);
       }
+    } else {
+      localStorage.setItem("theme", key);
     }
   };
 
