@@ -232,7 +232,7 @@ export default function TaskPlan({
 
   return (
     <div
-      className="sm:p-6 rounded-xl shadow-md w-full transition-all duration-300"
+      className="sm:p-6 border rounded-xl shadow-md w-full transition-all duration-300"
       style={{
         backgroundColor: colors._card,
         borderColor: colors._border,
