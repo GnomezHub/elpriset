@@ -3,7 +3,7 @@
 ## Slutprojekt i min utbildning till fullstack-utvecklare i Lexicon
 
 Jag vill helst göra något som jag vill använda själv, och kom fram till en webb app där man ska kunna se elpriset för dagen timme för timme och på så sätt planera sin förbrukning. Min sambo kan se spotpriset genom sin app och sin inloggning då hon står på elavtalet. Men då timpriserna är dom samma för alla i ett el-område fick jag idén om att ha en enkel app på en enkel adress (https://elpriset.netlify.app), så att man snabbt kan se när det är som billigast och när det är som dyrast, så att man kan undvika att förbruka el just då.
-Hämtar in aktuella priser timme för timme för dagen genom något lämpligt api (Nordpool?). Tänker att man kan lägga till saker som "tvätta", "dammsuga", "diskmaskin" och ställa in hur lång tid varje sak tar. Då kan appen säga när på dygnet det passar och jämföra det med morgondagen. Initialt tänker jag begränsa det till Sverige så jag tänker att man väljer sitt elområde på en karta eller dropdown.
+Hämtar in aktuella priser timme för timme för dagen genom något lämpligt api (det blev elprisetjustnu.se). Tänker att man kan lägga till saker som "tvätta", "dammsuga", "diskmaskin" och ställa in hur lång tid varje sak tar. Då kan appen säga när på dygnet det passar och jämföra det med morgondagen. Initialt tänker jag begränsa det till Sverige så jag tänker att man väljer sitt elområde på en karta eller dropdown.
 
 <br />
 
