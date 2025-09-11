@@ -30,6 +30,10 @@ Många funktioner som finns där ger ingen direkt nytta men visar att jag kan ta
 
 Är man inloggad med rollen "admin" i sin profil får man ett admin-gränsnitt där användarna listas upp med bild, namn, email, roll, elområde och vald tema. Klickar man på dessa får man fram den användarens aktiviteter och en varning som för att påminna administratören om att det är den valda personens aktiviteter (ev ändringarna görs direkt på vald användare). Detta är förståss skyddat av en policy på supabase som bara låter dig göra detta om din googleinloggnig kan kopplas till rollen admin.
 
+<br />
+<img width="1546" height="843" alt="Skärmbild 2025-09-11 112317" src="https://github.com/user-attachments/assets/76a287b6-0d8b-40b9-9cc6-6efbc332e9ba" />
+<i> Administratör-gränsnitt </i>
+<br /><br /><br />
 GANNT schema för återstående tid
 <img width="1768" height="319" alt="Skärmbild 2025-08-29 155851" src="https://github.com/user-attachments/assets/e5c80584-baba-4715-8dca-7bbf6051a252" />
 
