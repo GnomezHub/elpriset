@@ -8,6 +8,8 @@ Hämtar in aktuella priser timme för timme för dagen genom något lämpligt ap
 <br />
 
 <img width="1534" height="776" alt="Skärmbild 2025-09-11 120241" src="https://github.com/user-attachments/assets/28c69ed5-f0fe-4f43-97de-7c4b220ba535" />
+<br />
+
 <i> Graf med priser som visar både den lägsta och de högsta timmarna. En av aktiviteterna har varaktigheten 3, därför visas 3 staplar </i>
 <br />
 <br />
@@ -16,6 +18,11 @@ Inloggning ger möjlighet till att lagra sina "sysslor" och varaktighet. Exempel
 
 Fördelen av att ställa in sysslor är att man får hjälp att veta när man ska börja. Är det något som bara tar en timme är det lätt att hitta vägledning på andra sidor, de brukar ha en graf som visar timmen med lägst spotpris. Men är det en aktivitet som tar flera timmar behöver man ta hänsyn till timmarna innan och efter den lägsta och min app gör denna beräkning och tar fram den bästa startiden för hela tidsspannet. Har man fler aktiviteter kan starttiden bli någon helt annat för dessa.
 
+<img width="1558" height="705" alt="Skärmbild 2025-09-11 130117" src="https://github.com/user-attachments/assets/818564f9-7e4c-4f42-ae4c-ee79667447a7" />
+
+<i> Planeringshjälpen. Olika aktiviteter och de beräknade bästa starttiderna baserat på varaktighet och spotpris </i>
+<br />
+<br />
 
 ## 🛠 Teknologier
 I utkastet av readme-filen som jag bad AI ta fram så fanns VITE och ESLINT med som teknologier, men jag tar inte med dom av samma anledning som jag inte tar med VS code som teknologi hehe.
@@ -38,10 +45,11 @@ Många funktioner som finns där ger ingen direkt nytta men visar att jag kan ta
 Är man inloggad med rollen "admin" i sin profil får man ett admin-gränsnitt där användarna listas upp med bild, namn, email, roll, elområde och vald tema. Klickar man på dessa får man fram den användarens aktiviteter och en varning som för att påminna administratören om att det är den valda personens aktiviteter (ev ändringarna görs direkt på vald användare). Detta är förståss skyddat av en policy på supabase som bara låter dig göra detta om din googleinloggnig kan kopplas till rollen admin.
 
 <br />
-<img width="1546" height="843" alt="Skärmbild 2025-09-11 112317" src="https://github.com/user-attachments/assets/76a287b6-0d8b-40b9-9cc6-6efbc332e9ba" />
-<i> Administratör-gränsnitt </i>
+<img width="1542" height="878" alt="Skärmbild 2025-09-11 131515" src="https://github.com/user-attachments/assets/21500e02-4b66-4b16-823e-6795b8f686f1" />
+
+<i> Admin-gränsnittet </i>
 <br /><br /><br />
-GANNT schema för återstående tid
+GANNT schema för återstående tid (följde det på ett ungefär)
 <img width="1768" height="319" alt="Skärmbild 2025-08-29 155851" src="https://github.com/user-attachments/assets/e5c80584-baba-4715-8dca-7bbf6051a252" />
 
 ## AI
